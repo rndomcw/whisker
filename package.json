@@ -2,7 +2,7 @@
   "name": "whisker",
   "productName": "Whisker",
   "version": "0.4.0",
-  "description": "Whisker - desktop Android logcat viewer with device mirroring, no Android Studio needed",
+  "description": "Whisker",
   "private": true,
   "main": "out/main/main.js",
   "scripts": {

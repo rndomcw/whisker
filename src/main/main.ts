@@ -5,8 +5,9 @@ import { registerIpc } from './ipc';
 import { buildMenu } from './menu';
 import { migrateSettings } from './migrate';
 import { stopAll } from './sessions';
-import { createWindow, followSystemTheme } from './window';
+import { APP_ID, createWindow, followSystemTheme } from './window';
 
+if (process.platform === 'win32') app.setAppUserModelId(APP_ID);
 registerIpc();
 followSystemTheme();
 

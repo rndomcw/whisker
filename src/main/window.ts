@@ -6,6 +6,9 @@ import { app, BrowserWindow, nativeTheme } from 'electron';
 
 const isMac = process.platform === 'darwin';
 
+/** Windows app id; matches `build.appId` in package.json so taskbar pins and installer shortcuts group together. */
+export const APP_ID = 'com.whisker.logcat';
+
 function overlayColors(): Electron.TitleBarOverlayOptions {
   return nativeTheme.shouldUseDarkColors
     ? { color: '#2B2D30', symbolColor: '#DFE1E5', height: 36 }
@@ -38,7 +41,24 @@ export function createWindow(): BrowserWindow {
     },
   });
   void win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+  pinToPortableExe(win);
   return win;
+}
+
+/**
+ * The portable .exe unpacks the app to a temp folder that is deleted on exit. Without this, pinning the
+ * running window to the taskbar would point at that temp copy and break after the app closes.
+ */
+function pinToPortableExe(win: BrowserWindow): void {
+  const exe = process.env.PORTABLE_EXECUTABLE_FILE; // set by electron-builder's portable launcher
+  if (process.platform !== 'win32' || !exe) return;
+  win.setAppDetails({
+    appId: APP_ID,
+    relaunchCommand: `"${exe}"`,
+    relaunchDisplayName: 'Whisker',
+    appIconPath: exe,
+    appIconIndex: 0,
+  });
 }
 
 /** Keeps the window-button overlay in step with the OS light/dark theme. */
