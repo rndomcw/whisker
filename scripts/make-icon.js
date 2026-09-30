@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow } = require('electron');
 
+const BUILD_DIR = path.join(__dirname, '..', 'build');
 const SIZE = 1024;
 const ICO_SIZES = [16, 20, 24, 32, 40, 48, 64, 128, 256];
 
@@ -33,7 +34,7 @@ function buildIco(pngs) {
 }
 
 app.whenReady().then(async () => {
-  const svg = fs.readFileSync(path.join(__dirname, 'icon.svg'), 'utf8');
+  const svg = fs.readFileSync(path.join(BUILD_DIR, 'icon.svg'), 'utf8');
   const html = '<!doctype html><html><head><style>html,body{margin:0;overflow:hidden;background:transparent}' +
     `svg{display:block;width:${SIZE}px;height:${SIZE}px}</style></head><body>${svg}</body></html>`;
   const win = new BrowserWindow({
@@ -50,9 +51,9 @@ app.whenReady().then(async () => {
   await new Promise(r => setTimeout(r, 300));
   const full = (await win.webContents.capturePage()).resize({ width: SIZE, height: SIZE, quality: 'best' });
 
-  fs.writeFileSync(path.join(__dirname, 'icon.png'), full.toPNG());
+  fs.writeFileSync(path.join(BUILD_DIR, 'icon.png'), full.toPNG());
   const pngs = ICO_SIZES.map(size => ({ size, data: full.resize({ width: size, height: size, quality: 'best' }).toPNG() }));
-  fs.writeFileSync(path.join(__dirname, 'icon.ico'), buildIco(pngs));
+  fs.writeFileSync(path.join(BUILD_DIR, 'icon.ico'), buildIco(pngs));
   console.log(`Wrote icon.png (${SIZE}px) and icon.ico (${ICO_SIZES.join(', ')}px)`);
   app.quit();
 });

@@ -1,0 +1,129 @@
+/* Side toolbar and the virtualized log view. */
+
+.body { flex: 1; display: flex; min-height: 0; }
+
+.side-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 40px;
+  padding: 6px 0;
+  flex: none;
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+}
+
+.log-wrap { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.notice {
+  flex: none;
+  padding: 4px 12px;
+  background: var(--notice);
+  color: var(--notice-fg);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#log {
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  outline: none;
+  color: var(--fg-2);
+  font: 12.5px/var(--row-h) "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", monospace;
+  font-variant-ligatures: none;
+}
+
+/* 100 characters, measured to know the monospace character width. */
+#probe { position: absolute; visibility: hidden; white-space: pre; top: 0; left: 0; pointer-events: none; }
+
+#rows { position: absolute; top: 0; left: 0; right: 0; will-change: transform; }
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  height: var(--row-h);
+  padding: 0 8px;
+  white-space: pre;
+  overflow: hidden;
+  cursor: default;
+}
+/* .hover is set from JS (not :hover): rows are re-rendered as logs stream, which would make :hover flicker. */
+.row.hover { background: color-mix(in srgb, var(--hover) 45%, transparent); }
+.row.sel { background: var(--sel); }
+
+.row > span { flex: none; overflow: hidden; text-overflow: ellipsis; padding-right: 1ch; }
+.c-time { width: var(--w-time); }
+.c-pid  { width: var(--w-pid); }
+.c-tag  { width: var(--w-tag); }
+.c-pkg  { width: var(--w-pkg); }
+.c-lvl  { width: var(--w-lvl); }
+.row > .c-msg { flex: 1; padding-right: 0; }
+
+#log.hide-pid .c-pid, #log.hide-tag .c-tag, #log.hide-pkg .c-pkg { display: none; }
+
+#log.wrap .row > .c-msg {
+  flex: none;
+  width: calc(var(--cpl) * 1ch);
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.c-lvl b {
+  display: inline-block;
+  width: 2ch;
+  line-height: calc(var(--row-h) - 4px);
+  margin-top: 2px;
+  text-align: center;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.LV .c-msg { color: var(--V); } .LV .c-lvl b { background: var(--V-bg); color: var(--V-fg); }
+.LD .c-msg { color: var(--D); } .LD .c-lvl b { background: var(--D-bg); color: var(--D-fg); }
+.LI .c-msg { color: var(--I); } .LI .c-lvl b { background: var(--I-bg); color: var(--I-fg); }
+.LW .c-msg { color: var(--W); } .LW .c-lvl b { background: var(--W-bg); color: var(--W-fg); }
+.LE .c-msg { color: var(--E); } .LE .c-lvl b { background: var(--E-bg); color: var(--E-fg); }
+.LF .c-msg, .LA .c-msg { color: var(--A); font-weight: 600; }
+.LF .c-lvl b, .LA .c-lvl b { background: var(--A-bg); color: var(--A-fg); }
+
+.t0 { color: var(--t0); } .t1 { color: var(--t1); } .t2 { color: var(--t2); } .t3 { color: var(--t3); }
+.t4 { color: var(--t4); } .t5 { color: var(--t5); } .t6 { color: var(--t6); } .t7 { color: var(--t7); }
+.t8 { color: var(--t8); } .t9 { color: var(--t9); } .t10 { color: var(--t10); } .t11 { color: var(--t11); }
+
+.row.marker { color: var(--dim); }
+.row.marker.proc { color: var(--fg-2); }
+
+mark { background: var(--mark); color: inherit; border-radius: 2px; }
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dim);
+  pointer-events: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.follow-btn {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+}

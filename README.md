@@ -4,10 +4,19 @@ Whisker is a desktop Android logcat viewer with device mirroring (Electron), mod
 
 ## Develop
 
+Whisker is written in TypeScript. esbuild bundles it into `out/`, and `tsc` checks the types.
+
 ```bash
 npm install
 npm start
 ```
+
+| Command | What it does |
+| --- | --- |
+| `npm start` | Builds into `out/` and starts the app |
+| `npm run watch` | Rebuilds on every change; restart the app, or press `Ctrl+R` for renderer changes |
+| `npm run typecheck` | Type-checks the main process and the renderer separately |
+| `npm run build` | Bundles `src/` into `out/` |
 
 If `npm start` reports that Electron failed to install, run `node node_modules/electron/install.js` to download the Electron binary.
 
@@ -17,7 +26,7 @@ If `npm start` reports that Electron failed to install, run `node node_modules/e
 npm run dist
 ```
 
-This writes an installer and a portable `.exe` to `dist/`. `npm run pack` builds only the unpacked app, in `dist/win-unpacked/`, which is faster to test.
+This type-checks, bundles and writes an installer and a portable `.exe` to `dist/`. `npm run pack` builds only the unpacked app, in `dist/win-unpacked/`, which is faster to test.
 
 The app icon is drawn in `build/icon.svg`. After editing it, run `npm run icon` to regenerate `build/icon.png` and `build/icon.ico`.
 
@@ -25,15 +34,32 @@ adb is found through the `ADB` environment variable, then `ANDROID_HOME` or `AND
 
 ## Layout
 
-| Path | Role |
-| --- | --- |
-| `main.js` | Electron main process: window, menu shortcuts, IPC handlers, file dialogs |
-| `preload.js` | Exposes a small `window.logcat` API to the UI |
-| `src/mirror.js` | Starts scrcpy-server and relays its video stream and control socket |
-| `renderer/mirror.js` | Mirror panel: WebCodecs H.264 decoding, touch/keyboard → scrcpy control messages |
-| `vendor/scrcpy/` | Bundled `scrcpy-server` v4.0 and its Apache-2.0 license |
-| `src/adb.js` | Finds adb; gets device info, processes and packages; takes screenshots; streams and parses `logcat -v threadtime` |
-| `renderer/` | The UI (plain HTML/CSS/JS) |
+```
+src/
+  shared/          Types and IPC channel names used by both processes
+  main/            Electron main process
+    main.ts          App lifecycle
+    window.ts        Main window and title bar
+    menu.ts          Menu and keyboard accelerators
+    ipc.ts           IPC handlers behind window.whisker
+    sessions.ts      Per-window logcat streams and mirror sessions, cleaned up on reload/close
+    migrate.ts       Copies settings from the old "Logcat Viewer" name
+    adb/             Finding/running adb, device queries, logcat streaming and parsing
+    mirror/          scrcpy-server session: protocol constants, stream reader
+  preload/         Exposes the typed window.whisker API
+  renderer/        The UI
+    main.ts          Entry point: initializes the modules and starts polling
+    tabs/            Tab (lines, filters, streaming), tab strip, stream routing
+    query/           Filter query tokenizer and compiler (Android Studio syntax)
+    log/             Log entry model and package/process selections
+    view/            Virtualized rendering, row layout, hover, status messages
+    ui/              Device/process pickers, query bar, autocomplete, toolbar, menus, keyboard
+    mirror/          Mirror panel: WebCodecs decoding, input, control messages
+    styles/          CSS, split by area
+scripts/           build.mjs (esbuild) and make-icon.js
+vendor/scrcpy/     Bundled scrcpy-server v4.0 and its Apache-2.0 license
+build/             App icon
+```
 
 ## Features
 

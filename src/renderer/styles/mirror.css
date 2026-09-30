@@ -1,0 +1,71 @@
+/* Device mirroring panel. */
+
+.splitter {
+  width: 5px;
+  flex: none;
+  cursor: col-resize;
+  background: var(--line);
+  border-left: 2px solid var(--bg);
+  border-right: 2px solid var(--bg);
+}
+.splitter:hover, .splitter.dragging { background: var(--accent); }
+
+.mirror {
+  width: var(--mirror-w, 380px);
+  min-width: 220px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+}
+.mirror-bar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  height: 34px;
+  padding: 0 6px 0 10px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.mirror-title { overflow: hidden; text-overflow: ellipsis; min-width: 0; font-weight: 600; }
+
+.mirror-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  outline: none;
+}
+.mirror-stage.focused canvas { box-shadow: 0 0 0 2px var(--accent); }
+#mirrorCanvas {
+  display: block;
+  border-radius: 10px;
+  background: #000;
+  cursor: default;
+  touch-action: none;
+}
+.mirror-status {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  color: var(--dim);
+  pointer-events: none;
+}
+.mirror-status button { pointer-events: auto; margin-top: 8px; padding: 3px 12px; border-radius: 4px; background: var(--press); color: var(--fg); }
+.mirror-status.error { color: var(--E); }
+/* Receives keyboard and IME text for the device; visually hidden but focusable. */
+.mirror-input {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  resize: none;
+}

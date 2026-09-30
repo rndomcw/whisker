@@ -1,0 +1,79 @@
+/* Colors follow the IntelliJ "New UI" Dark / Light themes used by Android Studio. */
+:root {
+  --row-h: 20px; /* keep in sync with ROW_H in constants.ts */
+  --w-time: 24ch;
+  --w-pid: 13ch;
+  --w-tag: 24ch;
+  --w-pkg: 32ch;
+  --w-lvl: 3ch;
+  --cpl: 100;
+
+  --bg: #1E1F22;
+  --panel: #2B2D30;
+  --border: #1E1F22;
+  --line: #393B40;
+  --fg: #DFE1E5;
+  --fg-2: #BCBEC4;
+  --dim: #6F737A;
+  --icon: #CED0D6;
+  --hover: #393B40;
+  --press: #43454A;
+  --accent: #3574F0;
+  --tab-active: #2E436E;
+  --tab-active-border: #3574F0;
+  --sel: #2E436E;
+  --input: #1E1F22;
+  --input-border: #4E5157;
+  --mark: #5E4D1C;
+  --menu: #2B2D30;
+  --menu-border: #43454A;
+  --notice: #3D3223;
+  --notice-fg: #E0C46C;
+
+  --V: #BCBEC4;  --V-bg: #6F737A;  --V-fg: #1E1F22;
+  --D: #5394EC;  --D-bg: #3D7CC9;  --D-fg: #1E1F22;
+  --I: #A8C023;  --I-bg: #9AAF2E;  --I-fg: #1E1F22;
+  --W: #E0C46C;  --W-bg: #D6BF55;  --W-fg: #1E1F22;
+  --E: #FF6B68;  --E-bg: #E5534B;  --E-fg: #1E1F22;
+  --A: #FF6B68;  --A-bg: #A12F2F;  --A-fg: #FFFFFF;
+
+  --t0: #D5D8DE; --t1: #C3CE6B; --t2: #4FC1C9; --t3: #E774C4; --t4: #F07178; --t5: #73C991;
+  --t6: #D6A45C; --t7: #8FA8F5; --t8: #B98EF0; --t9: #5CC8A5; --t10: #E8C170; --t11: #F08D6C;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #FFFFFF;
+    --panel: #F7F8FA;
+    --border: #EBECF0;
+    --line: #EBECF0;
+    --fg: #1E1F22;
+    --fg-2: #3C3F45;
+    --dim: #818594;
+    --icon: #6C707E;
+    --hover: #DFE1E5;
+    --press: #D3D5DB;
+    --tab-active: #D5E1FF;
+    --tab-active-border: #3574F0;
+    --sel: #D5E1FF;
+    --input: #FFFFFF;
+    --input-border: #C9CCD6;
+    --mark: #FFE08A;
+    --menu: #FFFFFF;
+    --menu-border: #DFE1E5;
+    --notice: #FFF4DB;
+    --notice-fg: #7A5A00;
+
+    --V: #6F737A;  --V-bg: #C9CCD6;  --V-fg: #1E1F22;
+    --D: #1F5FBF;  --D-bg: #6D9DE8;  --D-fg: #FFFFFF;
+    --I: #4C7A00;  --I-bg: #8DB33A;  --I-fg: #FFFFFF;
+    --W: #8A6A00;  --W-bg: #E5C150;  --W-fg: #1E1F22;
+    --E: #D0312D;  --E-bg: #E5534B;  --E-fg: #FFFFFF;
+    --A: #A01010;  --A-bg: #A01010;  --A-fg: #FFFFFF;
+
+    --t0: #3C3F45; --t1: #6F7A00; --t2: #00838F; --t3: #B0249A; --t4: #C62828; --t5: #2E7D32;
+    --t6: #A0661B; --t7: #3949AB; --t8: #7B3FC4; --t9: #00796B; --t10: #9C7400; --t11: #C2501F;
+    color-scheme: light;
+  }
+}

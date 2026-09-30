@@ -1,0 +1,10 @@
+{
+  // Editor view of the whole project. `npm run typecheck` checks main and renderer separately
+  // (tsconfig.main.json / tsconfig.renderer.json) so browser code can't use Node APIs and vice versa.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"]
+  },
+  "include": ["src"]
+}
