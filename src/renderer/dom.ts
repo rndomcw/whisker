@@ -42,6 +42,11 @@ export const els = {
   exportBtn: el<HTMLButtonElement>('btnExport'),
   format: el<HTMLButtonElement>('btnFormat'),
   shot: el<HTMLButtonElement>('btnShot'),
+  record: el<HTMLButtonElement>('btnRecord'),
+  recordIcon: el<SVGUseElement>('recordIcon'),
+  recBadge: el('recBadge'),
+  recText: el('recText'),
+  recStop: el<HTMLButtonElement>('recStop'),
   mirror: el<HTMLButtonElement>('btnMirror'),
 
   log: el('log'),

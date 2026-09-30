@@ -1,5 +1,6 @@
 // Window-wide keyboard shortcuts. Text fields keep their own keys (the mirror panel stops propagation).
 
+import { isDialogOpen } from '../capture/dialog';
 import { els } from '../dom';
 import { state } from '../state';
 import { clearSelection, copySelection, scrollToEnd, scrollToStart, selectAll } from './logView';
@@ -7,6 +8,7 @@ import { closeMenu, isMenuOpen } from './menu';
 
 export function initKeyboard(): void {
   document.addEventListener('keydown', ev => {
+    if (isDialogOpen()) return; // an open dialog handles its own keys
     const target = ev.target as HTMLElement;
     const inField = target.matches('input, textarea, select');
     const mod = ev.ctrlKey || ev.metaKey;

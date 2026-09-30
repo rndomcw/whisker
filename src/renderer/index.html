@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Whisker</title>
   <link rel="stylesheet" href="app.css">
@@ -38,6 +38,20 @@
     <symbol id="i-voldown" viewBox="0 0 16 16"><path d="M3.5 6.3h2.3L9 3.5v9L5.8 9.7H3.5zM11.5 5.5a3.5 3.5 0 0 1 0 5"/></symbol>
     <symbol id="i-rotate" viewBox="0 0 16 16"><rect x="3.5" y="6.2" width="9" height="5.6" rx="1"/><path d="M4 4.2A5.3 5.3 0 0 1 12.6 5M12.8 2.6v2.6h-2.6"/></symbol>
     <symbol id="i-bell" viewBox="0 0 16 16"><path d="M4.2 11.5V7.3a3.8 3.8 0 0 1 7.6 0v4.2l1 1H3.2zM6.8 14h2.4"/></symbol>
+    <symbol id="i-record" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2.6" class="dot"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="1.2" class="dot"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 16 16"><path d="M4.5 1.5v10h10M1.5 4.5h10v10"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 16 16"><path d="m10.7 2.3 3 3-8.2 8.2-3.6.6.6-3.6zM9.2 3.8l3 3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 13 13 3M7 3h6v6"/></symbol>
+    <symbol id="i-rect" viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="9" rx="1"/></symbol>
+    <symbol id="i-text" viewBox="0 0 16 16"><path d="M3 3.5h10M8 3.5v10M6 13.5h4"/></symbol>
+    <symbol id="i-pixelate" viewBox="0 0 16 16"><path d="M2.5 2.5h11v11h-11zM6.2 2.5v11M9.8 2.5v11M2.5 6.2h11M2.5 9.8h11"/><path d="M2.5 2.5h3.7v3.7H2.5zM9.8 2.5h3.7v3.7H9.8zM6.2 6.2h3.6v3.6H6.2zM2.5 9.8h3.7v3.7H2.5zM9.8 9.8h3.7v3.7H9.8z" class="dot"/></symbol>
+    <symbol id="i-rotate-left" viewBox="0 0 16 16"><path d="M3.3 7A5 5 0 1 1 4 11.3M3.1 3v4h4"/></symbol>
+    <symbol id="i-rotate-right" viewBox="0 0 16 16"><path d="M12.7 7A5 5 0 1 0 12 11.3M12.9 3v4h-4"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 16 16"><path d="M5.5 3 2.5 6l3 3M2.8 6H10a3.5 3.5 0 0 1 0 7H7"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 16 16"><path d="m10.5 3 3 3-3 3M13.2 6H6a3.5 3.5 0 0 0 0 7h3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.2"/><path d="M10.5 3.5v-1h-8v8h1"/></symbol>
+    <symbol id="i-save" viewBox="0 0 16 16"><path d="M8 2.5v8M5 7.5l3 3 3-3M2.5 11v2.5h11V11"/></symbol>
     <symbol id="i-file" viewBox="0 0 16 16"><path d="M4 1.8h5.2L12 4.6v9.6H4zM9 1.8v3h3"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 16 16"><path d="M4.5 6.5 8 10l3.5-3.5"/></symbol>
     <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
@@ -89,11 +103,17 @@
       <button id="btnFormat" class="icon-btn" title="Configure Logcat Formatting Options"><svg><use href="#i-settings"/></svg></button>
       <span class="tool-sep"></span>
       <button id="btnShot" class="icon-btn" title="Take Screenshot"><svg><use href="#i-camera"/></svg></button>
+      <button id="btnRecord" class="icon-btn" title="Record Screen"><svg><use id="recordIcon" href="#i-record"/></svg></button>
       <button id="btnMirror" class="icon-btn" title="Device Mirroring"><svg><use href="#i-mirror"/></svg></button>
     </nav>
 
     <div class="log-wrap">
       <div id="notice" class="notice" hidden></div>
+      <div id="recBadge" class="rec-badge" hidden>
+        <span class="rec-dot"></span>
+        <span id="recText">REC</span>
+        <button id="recStop" class="rec-stop" title="Stop recording"><svg><use href="#i-stop"/></svg> Stop</button>
+      </div>
       <main id="log" tabindex="0">
         <span id="probe" aria-hidden="true">0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</span>
         <div id="spacer"></div>

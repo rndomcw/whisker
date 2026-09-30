@@ -17,6 +17,13 @@ import {
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
+export interface SessionOptions extends MirrorOptions {
+  /** Open the control socket (input injection). Recording doesn't need it. */
+  control?: boolean;
+  /** Extra scrcpy-server key=value arguments. */
+  extraArgs?: string[];
+}
+
 function serverFile(): string | undefined {
   const candidates = [
     process.env.SCRCPY_SERVER_PATH,
@@ -36,7 +43,9 @@ export class MirrorSession {
 
   constructor(private readonly serial: string, private readonly emit: (event: MirrorEvent) => void) {}
 
-  async start({ maxSize = 1280, bitRate = 8000000, maxFps = 60 }: MirrorOptions = {}): Promise<void> {
+  async start({
+    maxSize = 1280, bitRate = 8000000, maxFps = 60, control = true, extraArgs = [],
+  }: SessionOptions = {}): Promise<void> {
     try {
       const file = serverFile();
       if (!file) throw new Error('scrcpy-server not found (expected in vendor/scrcpy)');
@@ -50,9 +59,9 @@ export class MirrorSession {
 
       const args = [
         SCRCPY_VERSION, `scid=${scid}`, 'log_level=info',
-        'tunnel_forward=true', 'audio=false', 'control=true', 'cleanup=true', 'power_on=true',
+        'tunnel_forward=true', 'audio=false', `control=${control}`, 'cleanup=true', 'power_on=true',
         'clipboard_autosync=false', 'video_codec=h264', `max_size=${maxSize}`,
-        `video_bit_rate=${bitRate}`, `max_fps=${maxFps}`,
+        `video_bit_rate=${bitRate}`, `max_fps=${maxFps}`, ...extraArgs,
       ];
       this.emit({ type: 'status', text: 'Starting scrcpy-server…' });
       const server = spawn(ADB, ['-s', this.serial, 'shell',
@@ -69,9 +78,11 @@ export class MirrorSession {
 
       const { socket, first } = await this.connectVideo();
       this.video = socket;
-      this.control = await this.connect();
-      this.control.on('data', () => {}); // device messages (clipboard etc.) are not used; drain them
-      this.control.on('error', () => {});
+      if (control) {
+        this.control = await this.connect();
+        this.control.on('data', () => {}); // device messages (clipboard etc.) are not used; drain them
+        this.control.on('error', () => {});
+      }
       this.readVideo(socket, first.subarray(1)); // skip the dummy byte
     } catch (err) {
       this.fail((err as Error).message);

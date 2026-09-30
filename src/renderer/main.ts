@@ -2,6 +2,8 @@
 
 import './styles/index.css';
 import { api } from './api';
+import { initCaptureSettings } from './capture/captureSettings';
+import { initRecorder } from './capture/recorder';
 import { devices, refreshDevices, refreshProcs } from './devices';
 import { initMirrorPanel, setMirrorOpen } from './mirror/mirrorPanel';
 import { saveSettings, settings } from './settings';
@@ -33,6 +35,8 @@ initQueryBar();
 initLogView();
 initHover();
 initToolbar();
+initRecorder({ onStateChange: renderToolbar });
+void initCaptureSettings({ onChange: () => { if (state.hasActive) renderToolbar(); } });
 initKeyboard();
 initMirrorPanel({
   width: settings.mirrorWidth,

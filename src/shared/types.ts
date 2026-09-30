@@ -66,6 +66,28 @@ export interface ImportedLog {
   lines: LogLine[];
 }
 
+/** Part of a recording to export, in ms from its start. */
+export interface TrimRange {
+  startMs: number;
+  endMs: number;
+}
+
+export type RecordEvent =
+  | { type: 'status'; text: string }
+  /** The first frame arrived. */
+  | { type: 'started'; width: number; height: number }
+  | { type: 'progress'; durationMs: number; bytes: number }
+  /** Recording stopped on its own (device unplugged, size change, time limit); call recordStop for the result. */
+  | { type: 'end'; error: string };
+
+export interface RecordingResult {
+  /** The whole recording as MP4. */
+  data: Uint8Array;
+  durationMs: number;
+  width: number;
+  height: number;
+}
+
 export type MenuCommand = 'newTab' | 'import' | 'save' | 'resetSettings';
 
 /** The API the preload script exposes to the renderer as `window.whisker`. */
@@ -82,8 +104,33 @@ export interface WhiskerApi {
   onEnd(cb: (id: number, info: StreamEnd) => void): void;
   saveFile(defaultName: string, text: string): Promise<string | null>;
   importFile(): Promise<ImportedLog | null>;
-  screenshot(serial: string): Promise<string | null>;
   confirm(opts: ConfirmOptions): Promise<boolean>;
+
+  /** PNG of the device screen. */
+  captureScreenshot(serial: string): Promise<Uint8Array>;
+  saveImage(png: Uint8Array, defaultName: string): Promise<string | null>;
+  copyImage(png: Uint8Array): Promise<void>;
+  recordStart(id: number, serial: string): void;
+  /** Stops recording and returns the MP4, or null if nothing was captured. */
+  recordStop(id: number): Promise<RecordingResult | null>;
+  recordSave(id: number, range: TrimRange | null, defaultName: string): Promise<string | null>;
+  /** Puts the (trimmed) MP4 on the clipboard as a file. */
+  recordCopy(id: number, range: TrimRange | null): Promise<void>;
+  /** Frees a finished recording. */
+  recordDiscard(id: number): void;
+
+  /** Default auto-save folder (Pictures\Whisker). */
+  defaultCaptureFolder(): Promise<string>;
+  /** Lets the user pick a folder; null if cancelled. */
+  chooseFolder(current: string): Promise<string | null>;
+  /** Captures a screenshot straight into `folder`; resolves with the file path. */
+  saveScreenshotTo(serial: string, folder: string, baseName: string): Promise<string>;
+  /** Writes the whole recording into `folder` and frees it; resolves with the file path. */
+  recordSaveTo(id: number, folder: string, baseName: string): Promise<string>;
+  showInFolder(filePath: string): void;
+  openFolder(folder: string): void;
+  onRecord(cb: (id: number, event: RecordEvent) => void): void;
+
   onMenu(cmd: MenuCommand, cb: () => void): void;
   mirrorStart(id: number, serial: string, opts: MirrorOptions): void;
   mirrorStop(id: number): void;

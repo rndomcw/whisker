@@ -18,8 +18,22 @@ export const IPC = {
   mirrorEvent: 'mirror:event',
   saveFile: 'file:save',
   importFile: 'file:import',
-  screenshot: 'device:screenshot',
   confirm: 'app:confirm',
+  captureScreenshot: 'capture:screenshot',
+  saveImage: 'capture:saveImage',
+  copyImage: 'capture:copyImage',
+  recordStart: 'record:start',
+  recordStop: 'record:stop',
+  recordSave: 'record:save',
+  recordCopy: 'record:copy',
+  recordDiscard: 'record:discard',
+  recordEvent: 'record:event',
+  recordSaveTo: 'record:saveTo',
+  defaultCaptureFolder: 'capture:defaultFolder',
+  chooseFolder: 'capture:chooseFolder',
+  saveScreenshotTo: 'capture:saveScreenshotTo',
+  showInFolder: 'capture:showInFolder',
+  openFolder: 'capture:openFolder',
 } as const;
 
 export const menuChannel = (cmd: MenuCommand) => `menu:${cmd}`;

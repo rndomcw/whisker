@@ -2,7 +2,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 import { IPC, menuChannel } from '../shared/channels';
-import type { LogLine, MirrorEvent, StreamEnd, WhiskerApi } from '../shared/types';
+import type { LogLine, MirrorEvent, RecordEvent, StreamEnd, WhiskerApi } from '../shared/types';
 
 // Strip Electron's error prefix ("Error invoking remote method 'x': Error: ") so the UI shows adb's message.
 function invoke<T>(channel: string, ...args: unknown[]): Promise<T> {
@@ -24,8 +24,22 @@ const api: WhiskerApi = {
   onEnd: cb => { ipcRenderer.on(IPC.logcatEnd, (_e, id: number, info: StreamEnd) => cb(id, info)); },
   saveFile: (defaultName, text) => invoke(IPC.saveFile, defaultName, text),
   importFile: () => invoke(IPC.importFile),
-  screenshot: serial => invoke(IPC.screenshot, serial),
   confirm: opts => invoke(IPC.confirm, opts),
+  captureScreenshot: serial => invoke(IPC.captureScreenshot, serial),
+  saveImage: (png, defaultName) => invoke(IPC.saveImage, png, defaultName),
+  copyImage: png => invoke(IPC.copyImage, png),
+  recordStart: (id, serial) => ipcRenderer.send(IPC.recordStart, id, serial),
+  recordStop: id => invoke(IPC.recordStop, id),
+  recordSave: (id, range, defaultName) => invoke(IPC.recordSave, id, range, defaultName),
+  recordCopy: (id, range) => invoke(IPC.recordCopy, id, range),
+  recordDiscard: id => ipcRenderer.send(IPC.recordDiscard, id),
+  defaultCaptureFolder: () => invoke(IPC.defaultCaptureFolder),
+  chooseFolder: current => invoke(IPC.chooseFolder, current),
+  saveScreenshotTo: (serial, folder, baseName) => invoke(IPC.saveScreenshotTo, serial, folder, baseName),
+  recordSaveTo: (id, folder, baseName) => invoke(IPC.recordSaveTo, id, folder, baseName),
+  showInFolder: filePath => ipcRenderer.send(IPC.showInFolder, filePath),
+  openFolder: folder => ipcRenderer.send(IPC.openFolder, folder),
+  onRecord: cb => { ipcRenderer.on(IPC.recordEvent, (_e, id: number, event: RecordEvent) => cb(id, event)); },
   onMenu: (cmd, cb) => { ipcRenderer.on(menuChannel(cmd), () => cb()); },
   mirrorStart: (id, serial, opts) => ipcRenderer.send(IPC.mirrorStart, id, serial, opts),
   mirrorStop: id => ipcRenderer.send(IPC.mirrorStop, id),

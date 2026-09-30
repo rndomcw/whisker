@@ -1,6 +1,9 @@
 // The vertical toolbar left of the log.
 
 import { api } from '../api';
+import { autoSaveScreenshot, captureFolder, captureMenuItems, isAutoSave } from '../capture/captureSettings';
+import { isRecording, startRecording, stopRecording } from '../capture/recorder';
+import { openScreenshotDialog } from '../capture/screenshotDialog';
 import { deviceName, deviceOnline } from '../devices';
 import { els } from '../dom';
 import { exportLine } from '../log/entry';
@@ -12,6 +15,7 @@ import { fileTimestamp } from '../util/text';
 import { renderNotice } from '../view/status';
 import { openFormatMenu, resetSettings, toggleWrap } from './formatMenu';
 import { jumpToError, scrollToEnd } from './logView';
+import { showMenu } from './menu';
 import { toast } from './toast';
 
 export function renderToolbar(): void {
@@ -21,8 +25,21 @@ export function renderToolbar(): void {
   els.pause.classList.toggle('on', t.paused);
   els.wrap.classList.toggle('on', settings.wrap);
   const live = !t.file && !!t.device;
+  const online = live && deviceOnline(t.device);
   els.restart.disabled = !live;
-  els.shot.disabled = !live || !deviceOnline(t.device);
+  els.shot.disabled = !online;
+  // A running recording can always be stopped, even from a tab showing another device.
+  const recording = isRecording();
+  els.record.disabled = !online && !recording;
+  els.record.classList.toggle('recording', recording);
+  els.recordIcon.setAttribute('href', recording ? '#i-stop' : '#i-record');
+  // A dot on both capture buttons shows that auto-save is on.
+  const auto = isAutoSave();
+  const autoHint = auto ? `\nAuto-save to ${captureFolder()} (right-click for options)` : '\nRight-click for auto-save options';
+  els.shot.classList.toggle('auto-save', auto);
+  els.record.classList.toggle('auto-save', auto);
+  els.shot.title = 'Take Screenshot' + autoHint;
+  els.record.title = (recording ? 'Stop Recording' : 'Record Screen') + autoHint;
 }
 
 /** Points the mirror panel at the active tab's device. */
@@ -66,15 +83,22 @@ export async function importLog(): Promise<void> {
   toast(`Imported ${t.entries.length.toLocaleString()} lines`);
 }
 
-async function takeScreenshot(): Promise<void> {
+function takeScreenshot(): void {
   const t = state.active;
-  if (!t.device) return;
-  try {
-    const saved = await api.screenshot(t.device);
-    if (saved) toast('Screenshot saved to ' + saved);
-  } catch (e) {
-    toast('Screenshot failed: ' + (e as Error).message);
-  }
+  if (!t.device || t.file) return;
+  if (isAutoSave()) void autoSaveScreenshot(t.device);
+  else openScreenshotDialog(t.device);
+}
+
+function showCaptureMenu(ev: MouseEvent): void {
+  ev.preventDefault();
+  showMenu(ev.clientX, ev.clientY, captureMenuItems());
+}
+
+function toggleRecording(): void {
+  if (isRecording()) { void stopRecording(); return; }
+  const t = state.active;
+  if (t.device && !t.file) startRecording(t.device);
 }
 
 function toggleMirror(): void {
@@ -95,7 +119,10 @@ export function initToolbar(): void {
   els.importBtn.addEventListener('click', () => void importLog());
   els.exportBtn.addEventListener('click', () => void exportLog());
   els.format.addEventListener('click', openFormatMenu);
-  els.shot.addEventListener('click', () => void takeScreenshot());
+  els.shot.addEventListener('click', takeScreenshot);
+  els.record.addEventListener('click', toggleRecording);
+  els.shot.addEventListener('contextmenu', showCaptureMenu);
+  els.record.addEventListener('contextmenu', showCaptureMenu);
   els.mirror.addEventListener('click', toggleMirror);
 
   api.onMenu('import', () => void importLog());

@@ -86,3 +86,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.toast-action {
+  margin-left: 12px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}

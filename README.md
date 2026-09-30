@@ -41,11 +41,12 @@ src/
     main.ts          App lifecycle
     window.ts        Main window and title bar
     menu.ts          Menu and keyboard accelerators
-    ipc.ts           IPC handlers behind window.whisker
-    sessions.ts      Per-window logcat streams and mirror sessions, cleaned up on reload/close
+    ipc/             IPC handlers behind window.whisker, one file per area (adb, mirror, files, capture)
+    sessions.ts      Per-window logcat streams, mirror sessions and recordings, cleaned up on reload/close
     migrate.ts       Copies settings from the old "Logcat Viewer" name
     adb/             Finding/running adb, device queries, logcat streaming and parsing
     mirror/          scrcpy-server session: protocol constants, stream reader
+    capture/         Screen recording, MP4 muxer (H.264, edit-list trimming), clipboard helpers
   preload/         Exposes the typed window.whisker API
   renderer/        The UI
     main.ts          Entry point: initializes the modules and starts polling
@@ -55,6 +56,7 @@ src/
     view/            Virtualized rendering, row layout, hover, status messages
     ui/              Device/process pickers, query bar, autocomplete, toolbar, menus, keyboard
     mirror/          Mirror panel: WebCodecs decoding, input, control messages
+    capture/         Screenshot editor, recording preview/trim, REC badge, modal dialog
     styles/          CSS, split by area
 scripts/           build.mjs (esbuild) and make-icon.js
 vendor/scrcpy/     Bundled scrcpy-server v4.0 and its Apache-2.0 license
@@ -87,7 +89,22 @@ build/             App icon
   - Export: writes the filtered lines to a file.
   - Formatting: Standard or Compact view, column toggles, the log buffer, and **Reset All Settings…**.
     Settings (tabs, filters, favorites, display options, mirror panel) are remembered between launches in `%APPDATA%\Whisker`; reset returns them to the defaults. Settings from the earlier "Logcat Viewer" name are copied over on first launch.
-  - Take Screenshot.
+  - **Take Screenshot** opens a preview where you can edit the image before copying or saving it:
+    - rotate and crop;
+    - annotate with pen, arrow, rectangle and text in six colors;
+    - **pixelate** areas to hide sensitive data such as card numbers;
+    - undo/redo, and recapture.
+    Shortcuts: `C` `P` `A` `R` `T` `X` pick a tool; `Ctrl+Z`/`Ctrl+Y` undo/redo; `Ctrl+C` copies and `Ctrl+S` saves.
+  - **Record Screen** starts recording; a REC badge shows the time and size, and the button or badge stops it.
+    - A preview then plays the video. Drag the handles on the timeline to trim it; *Play Selection* plays the trimmed part.
+    - **Copy to Clipboard** copies the MP4 file, so you can paste it into Explorer, Teams, Slack, and so on. **Save…** writes it.
+    - Recordings use the bundled scrcpy at the device's resolution (video only, up to 30 minutes).
+    - They are written as MP4 directly, without re-encoding; trimming uses an MP4 edit list, so it is frame-accurate.
+    - Rotating the device ends a recording, because one MP4 track can't change size.
+  - **Auto-save:** right-click the screenshot or record button, or use the formatting menu.
+    - With **Auto-save Captures** on, captures skip the preview and go straight to the auto-save folder (default `Pictures\Whisker`), so you can take screenshots back to back.
+    - A green dot on the buttons shows it's on, and each save shows a *Show in Folder* link.
+    - Files taken in the same second get `-2`, `-3`, … suffixes instead of overwriting each other.
 - **Device mirroring**: the phone button at the bottom of the left toolbar opens a screen panel, like Android Studio's Running Devices. It uses the bundled [scrcpy](https://github.com/Genymobile/scrcpy) v4.0 server (`vendor/scrcpy`); scrcpy doesn't need to be installed.
   - Mouse: click or drag to tap or swipe. The wheel scrolls, right-click is Back, and middle-click is Home.
   - Keyboard: click the screen, then type. Chinese IME input works, and `Ctrl+V` pastes the PC clipboard into the device.

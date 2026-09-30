@@ -21,6 +21,13 @@ export interface FormatSettings {
   pkg: boolean;
 }
 
+export interface CaptureSettings {
+  /** Save screenshots and recordings straight to `folder`, without the preview. */
+  autoSave: boolean;
+  /** Auto-save folder; empty = Pictures\Whisker. */
+  folder: string;
+}
+
 export interface Settings {
   tabs: TabSettings[];
   active: number;
@@ -31,6 +38,7 @@ export interface Settings {
   history: string[];
   mirror: boolean;
   mirrorWidth: number;
+  capture: CaptureSettings;
 }
 
 function defaults(): Settings {
@@ -44,6 +52,7 @@ function defaults(): Settings {
     history: [],
     mirror: false,
     mirrorWidth: 380,
+    capture: { autoSave: false, folder: '' },
   };
 }
 
@@ -51,7 +60,9 @@ function loadSettings(): Settings {
   const d = defaults();
   try {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null') as Partial<Settings> | null;
-    if (s && Array.isArray(s.tabs) && s.tabs.length) return { ...d, ...s, format: { ...d.format, ...s.format } };
+    if (s && Array.isArray(s.tabs) && s.tabs.length) {
+      return { ...d, ...s, format: { ...d.format, ...s.format }, capture: { ...d.capture, ...s.capture } };
+    }
   } catch { /* storage unavailable */ }
   return d;
 }

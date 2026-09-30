@@ -1,6 +1,7 @@
 // Formatting options (columns, soft-wrap, log buffer) and resetting all settings.
 
 import { api } from '../api';
+import { captureMenuItems } from '../capture/captureSettings';
 import { BUFFERS, COLW } from '../constants';
 import { els } from '../dom';
 import { type FormatSettings, resetAndReload, saveSettings, settings } from '../settings';
@@ -69,6 +70,9 @@ export function openFormatMenu(): void {
         for (const t of state.tabs) if (!t.file && t.device) t.restart();
       },
     })),
+    '-',
+    { header: 'Screenshots & Recordings' },
+    ...captureMenuItems(),
     '-',
     { label: 'Reset All Settings…', action: () => void resetSettings() },
   ]);

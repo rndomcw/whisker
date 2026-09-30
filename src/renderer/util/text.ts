@@ -11,8 +11,11 @@ export const quoteIfNeeded = (v: string) =>
 
 export const capitalize = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
-/** File-name-safe local timestamp, e.g. 2026-09-30-14-05-09. */
-export const fileTimestamp = () => new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+export { fileTimestamp } from '../../shared/time';
+
+export function formatSize(bytes: number): string {
+  return bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
 
 // Some SDKs color their logs with terminal escape codes ("\x1b[093m text \x1b[0m"); logcat shows them as junk.
 const ANSI_RE = /\x1b?\[\d{1,3}(?:;\d{1,3})*m/g;
