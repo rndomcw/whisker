@@ -1,0 +1,46 @@
+{
+  "name": "whisker",
+  "productName": "Whisker",
+  "version": "0.4.0",
+  "description": "Whisker - desktop Android logcat viewer with device mirroring, no Android Studio needed",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "pack": "electron-builder --win --dir",
+    "icon": "electron build/make-icon.js"
+  },
+  "build": {
+    "appId": "com.whisker.logcat",
+    "productName": "Whisker",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**",
+      "renderer/**"
+    ],
+    "extraResources": [
+      {
+        "from": "vendor/scrcpy",
+        "to": "scrcpy"
+      }
+    ],
+    "icon": "build/icon.png",
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  }
+}

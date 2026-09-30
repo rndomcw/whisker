@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Whisker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.5 4.5h11M6 4.5V2.8h4v1.7M4 4.5l.7 9h6.6l.7-9M6.8 7v4.2M9.2 7v4.2"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 16 16"><path d="M5.5 3.5v9M10.5 3.5v9"/></symbol>
+    <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.2v9.6L12.5 8z"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 16 16"><path d="M12.7 8.5A4.7 4.7 0 1 1 11.3 4.4M11.8 1.8v2.9H8.9"/></symbol>
+    <symbol id="i-end" viewBox="0 0 16 16"><path d="M8 2.5v8.5M4.5 7.5 8 11l3.5-3.5M3.5 13.5h9"/></symbol>
+    <symbol id="i-up" viewBox="0 0 16 16"><path d="M8 13V3M4 7l4-4 4 4"/></symbol>
+    <symbol id="i-down" viewBox="0 0 16 16"><path d="M8 3v10M4 9l4 4 4-4"/></symbol>
+    <symbol id="i-wrap" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h9.2a2 2 0 0 1 0 4H8.5M10 10.5 8.5 12l1.5 1.5M2.5 12h3.5"/></symbol>
+    <symbol id="i-import" viewBox="0 0 16 16"><path d="M8 2.5v7.5M5 7l3 3 3-3M2.5 11v2.5h11V11"/></symbol>
+    <symbol id="i-export" viewBox="0 0 16 16"><path d="M8 10.5V2.5M5 5.5l3-3 3 3M2.5 11v2.5h11V11"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 16 16"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/><circle cx="5.5" cy="4.5" r="1.5" class="knob"/><circle cx="10.5" cy="8" r="1.5" class="knob"/><circle cx="7" cy="11.5" r="1.5" class="knob"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 16 16"><path d="M2 5.2h2.8L6 3.5h4l1.2 1.7H14v7.8H2z"/><circle cx="8" cy="8.8" r="2.3"/></symbol>
+    <symbol id="i-funnel" viewBox="0 0 16 16"><path d="M2.5 3h11L9.3 8.2V13l-2.6-1.3V8.2z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 16 16"><path d="m8 2 1.8 3.8 4.1.5-3 2.9.8 4.1L8 11.3l-3.7 2 .8-4.1-3-2.9 4.1-.5z"/></symbol>
+    <symbol id="i-help" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.3a1.8 1.8 0 1 1 2.5 1.6c-.5.2-.8.6-.8 1.1v.5M8 11.3v.2"/></symbol>
+    <symbol id="i-close" viewBox="0 0 16 16"><path d="m4.5 4.5 7 7M11.5 4.5l-7 7"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 16 16"><rect x="4.3" y="1.8" width="7.4" height="12.4" rx="1.3"/><path d="M7 11.8h2"/></symbol>
+    <symbol id="i-app" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/><rect x="9" y="9" width="4.5" height="4.5" rx="1"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.3"/><path d="m10.2 10.2 3.3 3.3"/></symbol>
+    <symbol id="i-mirror" viewBox="0 0 16 16"><rect x="3.8" y="1.8" width="8.4" height="12.4" rx="1.4"/><path d="m7 6 3 2-3 2z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 16 16"><path d="M11.5 3.2 4.8 8l6.7 4.8z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.8"/></symbol>
+    <symbol id="i-recents" viewBox="0 0 16 16"><rect x="3.5" y="3.5" width="9" height="9" rx="1.2"/></symbol>
+    <symbol id="i-power" viewBox="0 0 16 16"><path d="M8 2.2v5.3M5 4.2a5 5 0 1 0 6 0"/></symbol>
+    <symbol id="i-volup" viewBox="0 0 16 16"><path d="M2.5 6.3h2.3L8 3.5v9L4.8 9.7H2.5zM10.5 5.5a3.5 3.5 0 0 1 0 5M12.5 3.5a6.4 6.4 0 0 1 0 9"/></symbol>
+    <symbol id="i-voldown" viewBox="0 0 16 16"><path d="M3.5 6.3h2.3L9 3.5v9L5.8 9.7H3.5zM11.5 5.5a3.5 3.5 0 0 1 0 5"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 16 16"><rect x="3.5" y="6.2" width="9" height="5.6" rx="1"/><path d="M4 4.2A5.3 5.3 0 0 1 12.6 5M12.8 2.6v2.6h-2.6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 16 16"><path d="M4.2 11.5V7.3a3.8 3.8 0 0 1 7.6 0v4.2l1 1H3.2zM6.8 14h2.4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 16 16"><path d="M4 1.8h5.2L12 4.6v9.6H4zM9 1.8v3h3"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 16 16"><path d="M4.5 6.5 8 10l3.5-3.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
+  </svg>
+
+  <header class="header">
+    <span class="panel-title">Logcat</span>
+    <div id="tabs" class="tabs"></div>
+    <button id="addTab" class="icon-btn" title="New tab (Ctrl+T)"><svg><use href="#i-plus"/></svg></button>
+    <span class="drag-fill"></span>
+  </header>
+
+  <div class="filterbar">
+    <button id="deviceBtn" class="device-btn" title="Select device">
+      <svg class="device-icon"><use id="deviceIcon" href="#i-phone"/></svg>
+      <span id="deviceLabel" class="device-label"></span>
+      <span id="deviceSub" class="device-sub"></span>
+      <svg class="chevron"><use href="#i-chevron"/></svg>
+    </button>
+    <button id="procBtn" class="device-btn proc-btn" title="Show logs from one package or process">
+      <svg class="device-icon"><use href="#i-app"/></svg>
+      <span id="procLabel" class="device-label"></span>
+      <span id="procSub" class="device-sub"></span>
+      <span id="procClear" class="proc-clear" title="Show all processes" hidden><svg><use href="#i-close"/></svg></span>
+      <svg class="chevron"><use href="#i-chevron"/></svg>
+    </button>
+    <div id="queryBox" class="query-box">
+      <button id="filterMenu" class="icon-btn small" title="Filter history and favorites"><svg><use href="#i-funnel"/></svg></button>
+      <input id="query" spellcheck="false" autocomplete="off" placeholder="Press Ctrl+Space to see suggestions">
+      <button id="queryClear" class="icon-btn small" title="Clear filter" hidden><svg><use href="#i-close"/></svg></button>
+      <button id="caseBtn" class="text-toggle" title="Match case">Cc</button>
+      <button id="favBtn" class="icon-btn small" title="Add filter to favorites"><svg><use href="#i-star"/></svg></button>
+    </div>
+    <button id="helpBtn" class="icon-btn" title="Query syntax"><svg><use href="#i-help"/></svg></button>
+  </div>
+
+  <div class="body">
+    <nav class="side-toolbar">
+      <button id="btnClear" class="icon-btn" title="Clear Logcat"><svg><use href="#i-trash"/></svg></button>
+      <button id="btnPause" class="icon-btn" title="Pause Logcat (Space)"><svg><use id="pauseIcon" href="#i-pause"/></svg></button>
+      <button id="btnRestart" class="icon-btn" title="Restart Logcat"><svg><use href="#i-restart"/></svg></button>
+      <button id="btnEnd" class="icon-btn" title="Scroll to End (End)"><svg><use href="#i-end"/></svg></button>
+      <button id="btnPrev" class="icon-btn" title="Previous Error"><svg><use href="#i-up"/></svg></button>
+      <button id="btnNext" class="icon-btn" title="Next Error"><svg><use href="#i-down"/></svg></button>
+      <span class="tool-sep"></span>
+      <button id="btnWrap" class="icon-btn" title="Soft-Wrap"><svg><use href="#i-wrap"/></svg></button>
+      <button id="btnImport" class="icon-btn" title="Import Logcat from File (Ctrl+O)"><svg><use href="#i-import"/></svg></button>
+      <button id="btnExport" class="icon-btn" title="Export Logcat to File (Ctrl+S)"><svg><use href="#i-export"/></svg></button>
+      <button id="btnFormat" class="icon-btn" title="Configure Logcat Formatting Options"><svg><use href="#i-settings"/></svg></button>
+      <span class="tool-sep"></span>
+      <button id="btnShot" class="icon-btn" title="Take Screenshot"><svg><use href="#i-camera"/></svg></button>
+      <button id="btnMirror" class="icon-btn" title="Device Mirroring"><svg><use href="#i-mirror"/></svg></button>
+    </nav>
+
+    <div class="log-wrap">
+      <div id="notice" class="notice" hidden></div>
+      <main id="log" tabindex="0">
+        <span id="probe" aria-hidden="true">0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</span>
+        <div id="spacer"></div>
+        <div id="rows"></div>
+      </main>
+      <div id="empty" class="empty" hidden></div>
+      <button id="follow" class="follow-btn" hidden title="Scroll to End (End)"><svg><use href="#i-end"/></svg></button>
+    </div>
+
+    <div id="mirrorSplit" class="splitter" hidden></div>
+    <aside id="mirror" class="mirror" hidden>
+      <div class="mirror-bar">
+        <span id="mirrorTitle" class="mirror-title">Device</span>
+        <span class="spacer"></span>
+        <button class="icon-btn small" data-act="power" title="Power"><svg><use href="#i-power"/></svg></button>
+        <button class="icon-btn small" data-act="volup" title="Volume Up"><svg><use href="#i-volup"/></svg></button>
+        <button class="icon-btn small" data-act="voldown" title="Volume Down"><svg><use href="#i-voldown"/></svg></button>
+        <button class="icon-btn small" data-act="rotate" title="Rotate"><svg><use href="#i-rotate"/></svg></button>
+        <button class="icon-btn small" data-act="notifications" title="Notifications"><svg><use href="#i-bell"/></svg></button>
+        <span class="tool-sep vertical"></span>
+        <button class="icon-btn small" data-act="back" title="Back (right-click on screen)"><svg><use href="#i-back"/></svg></button>
+        <button class="icon-btn small" data-act="home" title="Home (middle-click on screen)"><svg><use href="#i-home"/></svg></button>
+        <button class="icon-btn small" data-act="recents" title="Overview"><svg><use href="#i-recents"/></svg></button>
+        <span class="tool-sep vertical"></span>
+        <button class="icon-btn small" data-act="restart" title="Restart mirroring"><svg><use href="#i-restart"/></svg></button>
+        <button class="icon-btn small" data-act="close" title="Close"><svg><use href="#i-close"/></svg></button>
+      </div>
+      <div id="mirrorStage" class="mirror-stage">
+        <canvas id="mirrorCanvas" hidden></canvas>
+        <div id="mirrorStatus" class="mirror-status"></div>
+        <textarea id="mirrorInput" class="mirror-input" aria-label="Keyboard input for the device" spellcheck="false" autocomplete="off"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <div id="suggest" class="menu suggest" hidden></div>
+  <div id="toast" class="toast" hidden></div>
+
+  <template id="helpTpl">
+    <div class="help">
+      <div class="help-title">Logcat query syntax</div>
+      <table>
+        <tr><td><code>tag:Foo</code></td><td>Tag contains <i>Foo</i></td></tr>
+        <tr><td><code>tag=:Foo</code></td><td>Tag is exactly <i>Foo</i></td></tr>
+        <tr><td><code>tag~:^Foo.*</code></td><td>Tag matches a regex</td></tr>
+        <tr><td><code>-tag:Foo</code></td><td>Exclude (works with any key)</td></tr>
+        <tr><td><code>package:com.example</code></td><td>Package (use <code>package:mine</code> for installed apps)</td></tr>
+        <tr><td><code>process:</code> <code>message:</code> <code>line:</code></td><td>Process name, message text, whole line</td></tr>
+        <tr><td><code>level:WARN</code></td><td>Minimum level (V, D, I, W, E, A)</td></tr>
+        <tr><td><code>age:5m</code></td><td>Newer than 30s, 5m, 2h, 1d…</td></tr>
+        <tr><td><code>is:crash</code> <code>is:stacktrace</code></td><td>Crashes, stack-trace lines</td></tr>
+        <tr><td><code>some text</code></td><td>Free text in tag, package or message</td></tr>
+        <tr><td><code>a | b</code>, <code>a &amp; b</code>, <code>( )</code></td><td>Or, and, grouping. Terms are AND-ed; repeated keys like <code>tag:a tag:b</code> are OR-ed</td></tr>
+        <tr><td><code>"quoted text"</code></td><td>Values with spaces or special characters</td></tr>
+      </table>
+    </div>
+  </template>
+
+  <script src="mirror.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
