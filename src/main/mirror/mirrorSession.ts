@@ -54,8 +54,14 @@ export class MirrorSession {
       if (this.stopped) return;
 
       const scid = Math.floor(Math.random() * 0x7fffffff).toString(16).padStart(8, '0');
-      this.port = Number((await runAdb(['-s', this.serial, 'forward', 'tcp:0', `localabstract:scrcpy_${scid}`])).trim());
-      if (!this.port) throw new Error('adb forward failed');
+      const port = Number((await runAdb(['-s', this.serial, 'forward', 'tcp:0', `localabstract:scrcpy_${scid}`])).trim());
+      if (!port) throw new Error('adb forward failed');
+      if (this.stopped) {
+        // Stopped while the forward was being set up; stop() couldn't remove it yet.
+        await runAdb(['-s', this.serial, 'forward', '--remove', `tcp:${port}`]).catch(() => {});
+        return;
+      }
+      this.port = port;
 
       const args = [
         SCRCPY_VERSION, `scid=${scid}`, 'log_level=info',
