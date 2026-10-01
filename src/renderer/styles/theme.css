@@ -25,6 +25,7 @@
   --input: #1E1F22;
   --input-border: #4E5157;
   --mark: #5E4D1C;
+  --mark-cur: #B8650F;
   --menu: #2B2D30;
   --menu-border: #43454A;
   --notice: #3D3223;
@@ -60,6 +61,7 @@
     --input: #FFFFFF;
     --input-border: #C9CCD6;
     --mark: #FFE08A;
+    --mark-cur: #FFA94D;
     --menu: #FFFFFF;
     --menu-border: #DFE1E5;
     --notice: #FFF4DB;

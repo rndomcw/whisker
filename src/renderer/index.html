@@ -26,6 +26,7 @@
     <symbol id="i-help" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.3a1.8 1.8 0 1 1 2.5 1.6c-.5.2-.8.6-.8 1.1v.5M8 11.3v.2"/></symbol>
     <symbol id="i-close" viewBox="0 0 16 16"><path d="m4.5 4.5 7 7M11.5 4.5l-7 7"/></symbol>
     <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.3 10.3 3.7 3.7"/></symbol>
     <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
     <symbol id="i-phone" viewBox="0 0 16 16"><rect x="4.3" y="1.8" width="7.4" height="12.4" rx="1.3"/><path d="M7 11.8h2"/></symbol>
     <symbol id="i-app" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/><rect x="9" y="9" width="4.5" height="4.5" rx="1"/></symbol>
@@ -111,6 +112,18 @@
 
     <div class="log-wrap">
       <div id="notice" class="notice" hidden></div>
+      <div id="findBar" class="find-bar" hidden>
+        <div id="findBox" class="query-box find-box">
+          <svg class="find-icon"><use href="#i-search"/></svg>
+          <input id="findInput" spellcheck="false" autocomplete="off" placeholder="Find in messages">
+          <span id="findCount" class="find-count"></span>
+          <button id="findCase" class="text-toggle" title="Match case">Cc</button>
+          <button id="findRegex" class="text-toggle" title="Regular expression">.*</button>
+        </div>
+        <button id="findPrev" class="icon-btn small" title="Previous match (Shift+Enter)"><svg><use href="#i-up"/></svg></button>
+        <button id="findNext" class="icon-btn small" title="Next match (Enter)"><svg><use href="#i-down"/></svg></button>
+        <button id="findClose" class="icon-btn small" title="Close (Esc)"><svg><use href="#i-close"/></svg></button>
+      </div>
       <div id="recBadge" class="rec-badge" hidden>
         <span class="rec-dot"></span>
         <span id="recText">REC</span>

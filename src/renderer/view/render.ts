@@ -7,11 +7,18 @@ import { settings } from '../settings';
 import { state } from '../state';
 import type { Tab } from '../tabs/Tab';
 import { esc } from '../util/text';
+import { find } from './find';
 import { updateHover } from './hover';
 import { ensureLayout, indexAtY, measure, rowLines, rowTop } from './layout';
 import { renderEmpty } from './status';
 
 let renderQueued = false;
+/** Called after each render, e.g. to update the find bar's match count. */
+let onRendered: () => void = () => {};
+
+export function setOnRendered(fn: () => void): void {
+  onRendered = fn;
+}
 
 /** Renders on the next animation frame; many updates per frame cost one render. */
 export function queueRender(): void {
@@ -34,8 +41,9 @@ function tagClass(tag: string): string {
   return c;
 }
 
+// While the find bar is open, its matches are highlighted instead of the filter's.
 function highlight(t: Tab, s: string): string {
-  const re = t.filter.hl;
+  const re = find.re ?? t.filter.hl;
   if (!re) return esc(s);
   let out = '', last = 0;
   let m: RegExpExecArray | null;
@@ -49,7 +57,7 @@ function highlight(t: Tab, s: string): string {
 }
 
 function rowHtml(t: Tab, e: LogEntry): string {
-  const sel = t.selected.has(e.id) ? ' sel' : '';
+  const sel = (t.selected.has(e.id) ? ' sel' : '') + (find.currentId === e.id ? ' find-cur' : '');
   if (e.marker) {
     return `<div class="row marker${e.raw ? '' : ' proc'}${sel}" data-id="${e.id}">${esc(markerText(e))}</div>`;
   }
@@ -87,4 +95,5 @@ export function render(): void {
   updateHover();
   els.follow.hidden = t.follow || n === 0;
   renderEmpty();
+  onRendered();
 }

@@ -14,6 +14,7 @@ import { initStreamRouting } from './tabs/streams';
 import { initAppMenu } from './ui/appMenu';
 import { initDeviceSelector } from './ui/deviceSelector';
 import { applyFormat } from './ui/formatMenu';
+import { initFindBar } from './ui/findBar';
 import { initKeyboard } from './ui/keyboard';
 import { initLogView } from './ui/logView';
 import { initMenus } from './ui/menu';
@@ -39,6 +40,7 @@ initHover();
 initToolbar();
 initRecorder({ onStateChange: renderToolbar });
 void initCaptureSettings({ onChange: () => { if (state.hasActive) renderToolbar(); } });
+initFindBar();
 initKeyboard();
 initMirrorPanel({
   width: settings.mirrorWidth,

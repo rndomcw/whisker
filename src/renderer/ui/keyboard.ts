@@ -3,6 +3,7 @@
 import { isDialogOpen } from '../capture/dialog';
 import { els } from '../dom';
 import { state } from '../state';
+import { closeFind, findStep, isFindOpen, openFind } from './findBar';
 import { clearSelection, copySelection, scrollToEnd, scrollToStart, selectAll } from './logView';
 import { closeMenu, isMenuOpen } from './menu';
 
@@ -15,12 +16,19 @@ export function initKeyboard(): void {
     const k = ev.key.toLowerCase();
     if (mod && k === 'f') {
       ev.preventDefault();
+      openFind();
+    } else if (mod && k === 'l') {
+      ev.preventDefault();
       els.query.focus();
       els.query.select();
+    } else if (ev.key === 'F3') {
+      ev.preventDefault();
+      findStep(ev.shiftKey ? -1 : 1);
     } else if (ev.key === 'Escape') {
       if (isMenuOpen()) closeMenu();
       else if (inField) target.blur();
-      else clearSelection();
+      else if (state.active.selected.size) clearSelection();
+      else if (isFindOpen()) closeFind();
     } else if (inField) {
       // leave text editing alone
     } else if (mod && k === 'c' && state.active.selected.size && !String(window.getSelection())) {
