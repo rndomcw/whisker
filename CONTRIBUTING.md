@@ -27,7 +27,14 @@ If `npm start` reports that Electron failed to install, run `node node_modules/e
 | `npm run dist` | Type-checks, bundles, and writes the installer and the portable `.exe` to `dist/` |
 | `npm run icon` | Regenerates `build/icon.png` and `build/icon.ico` from `build/icon.svg` |
 
-Whisker is written in strict TypeScript. esbuild bundles it, and `tsc` only checks types.
+Whisker is written in strict TypeScript; the UI uses [SolidJS](https://www.solidjs.com/). esbuild bundles it (with `esbuild-plugin-solid` for the JSX), and `tsc` only checks types.
+
+## Naming
+
+- **Files** are named after what they export:
+  - A Solid component (`.tsx`) or a class uses PascalCase, matching its name: `LogView.tsx`, `Tab.ts` (`class Tab`), `MirrorSession.ts`.
+  - Any other module (functions, constants, state) uses camelCase: `rowMenu.ts`, `tabActions.ts`, `settings.ts`.
+- **Folders** are lowercase: `state/`, `components/`, `mirror/`.
 
 ## Project layout
 
@@ -45,15 +52,23 @@ src/
     mirror/          scrcpy-server session: protocol constants, stream reader
     capture/         Screen recording, MP4 muxer (H.264, edit-list trimming), clipboard helpers
   preload/         Exposes the typed window.whisker API
-  renderer/        The UI
-    main.ts          Entry point: initializes the modules and starts polling
-    tabs/            Tab (lines, filters, streaming), tab strip, stream routing
+  renderer/        The UI, built with SolidJS
+    main.tsx         Entry point: restores the tabs, renders <App>, starts polling devices
+    state/           Reactive app state: tabs (Tab.ts), devices, settings, filter query, find, menus,
+                     dialogs, toasts, recording and capture settings
+    components/      Solid components
+      App.tsx          Window layout and the popups over it
+      header/          Logo (opens the app menu) and tab strip
+      filter/          Device and process pickers, query box with suggestions and syntax help
+      log/             Virtualized log view, find bar, notice/empty messages, row menu, log actions
+      mirror/          Mirror panel
+      capture/         Screenshot editor and dialog, recording preview and trim, REC badge
+      Toolbar.tsx      Left toolbar and the commands behind it
+      Menu.tsx, Dialog.tsx, Toast.tsx, Icon.tsx, keyboard.ts
     query/           Filter query tokenizer and compiler (Android Studio syntax)
     log/             Log entry model and package/process selections
-    view/            Virtualized rendering, row layout, hover, find, status messages
-    ui/              Pickers, query bar, find bar, autocomplete, toolbar, menus, keyboard
-    mirror/          Mirror panel: WebCodecs decoding, input, control messages
-    capture/         Screenshot editor, recording preview/trim, REC badge, modal dialog
+    view/layout.ts   Row geometry for the virtualized view (fixed or soft-wrapped rows)
+    mirror/          scrcpy control messages, WebCodecs decoder, input mapping
     styles/          CSS, split by area
 scripts/           build.mjs (esbuild) and make-icon.js
 vendor/scrcpy/     Bundled scrcpy-server v4.0 and its Apache-2.0 license
@@ -64,7 +79,8 @@ docs/images/       README screenshots (made from a fictional log, not a real dev
 ## How it works
 
 - **Logs:** the main process runs `adb logcat -v threadtime` and sends parsed lines to the renderer in batches. After a reconnect, it resumes with `-T <last timestamp>` and drops lines it already has.
-- **Rendering:** the log view is virtualized. Only the rows on screen are in the DOM, so a tab can hold 200k lines.
+- **State:** what the UI shows lives in Solid signals and stores (`src/renderer/state/`). A tab's lines are plain arrays, since there can be 200k of them; a `version` signal changes, at most once per frame, when they do.
+- **Rendering:** the log view is virtualized. Only the rows on screen are in the DOM, so a tab can hold 200k lines. Rows are keyed by entry, so while lines stream in only the new rows are created; selection, hover and the current find match are class bindings.
 - **Mirroring and recording:** Whisker pushes the bundled `scrcpy-server` to the device and reads its H.264 stream through an adb forward tunnel.
   - Mirroring decodes the stream in the renderer with WebCodecs and sends input back over scrcpy's control socket.
   - Recording muxes the same stream into MP4 in the main process, so ffmpeg isn't needed.

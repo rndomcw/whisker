@@ -3,7 +3,7 @@
 
 import type { WebContents } from 'electron';
 import type { Recording } from './capture/recording';
-import type { MirrorSession } from './mirror/mirrorSession';
+import type { MirrorSession } from './mirror/MirrorSession';
 
 const streams = new Map<string, () => void>();       // `${webContentsId}:${streamId}` → stop function
 const mirrors = new Map<string, MirrorSession>();    // `${webContentsId}:${mirrorId}` → session

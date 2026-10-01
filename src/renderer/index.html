@@ -29,7 +29,6 @@
     <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
     <symbol id="i-phone" viewBox="0 0 16 16"><rect x="4.3" y="1.8" width="7.4" height="12.4" rx="1.3"/><path d="M7 11.8h2"/></symbol>
     <symbol id="i-app" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/><rect x="9" y="9" width="4.5" height="4.5" rx="1"/></symbol>
-    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.3"/><path d="m10.2 10.2 3.3 3.3"/></symbol>
     <symbol id="i-mirror" viewBox="0 0 16 16"><rect x="3.8" y="1.8" width="8.4" height="12.4" rx="1.4"/><path d="m7 6 3 2-3 2z"/></symbol>
     <symbol id="i-back" viewBox="0 0 16 16"><path d="M11.5 3.2 4.8 8l6.7 4.8z"/></symbol>
     <symbol id="i-home" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.8"/></symbol>
@@ -58,137 +57,10 @@
     <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
   </svg>
 
-  <header class="header">
-    <button id="appMenu" class="app-brand" title="Menu (Alt)">
-      <img class="app-logo" src="logo.svg" alt="">
-      <span class="panel-title">Whisker</span>
-    </button>
-    <div id="tabs" class="tabs"></div>
-    <button id="addTab" class="icon-btn" title="New tab (Ctrl+T)"><svg><use href="#i-plus"/></svg></button>
-    <span class="drag-fill"></span>
-  </header>
+  <!-- The UI is rendered here by components/App.tsx. -->
+  <div id="root"></div>
 
-  <div class="filterbar">
-    <button id="deviceBtn" class="device-btn" title="Select device">
-      <svg class="device-icon"><use id="deviceIcon" href="#i-phone"/></svg>
-      <span id="deviceLabel" class="device-label"></span>
-      <span id="deviceSub" class="device-sub"></span>
-      <svg class="chevron"><use href="#i-chevron"/></svg>
-    </button>
-    <button id="procBtn" class="device-btn proc-btn" title="Show logs from one package or process">
-      <svg class="device-icon"><use href="#i-app"/></svg>
-      <span id="procLabel" class="device-label"></span>
-      <span id="procSub" class="device-sub"></span>
-      <span id="procClear" class="proc-clear" title="Show all processes" hidden><svg><use href="#i-close"/></svg></span>
-      <svg class="chevron"><use href="#i-chevron"/></svg>
-    </button>
-    <div id="queryBox" class="query-box">
-      <button id="filterMenu" class="icon-btn small" title="Filter history and favorites"><svg><use href="#i-funnel"/></svg></button>
-      <input id="query" spellcheck="false" autocomplete="off" placeholder="Press Ctrl+Space to see suggestions">
-      <button id="queryClear" class="icon-btn small" title="Clear filter" hidden><svg><use href="#i-close"/></svg></button>
-      <button id="caseBtn" class="text-toggle" title="Match case">Cc</button>
-      <button id="favBtn" class="icon-btn small" title="Add filter to favorites"><svg><use href="#i-star"/></svg></button>
-    </div>
-    <button id="helpBtn" class="icon-btn" title="Query syntax"><svg><use href="#i-help"/></svg></button>
-  </div>
-
-  <div class="body">
-    <nav class="side-toolbar">
-      <button id="btnClear" class="icon-btn" title="Clear Logcat"><svg><use href="#i-trash"/></svg></button>
-      <button id="btnPause" class="icon-btn" title="Pause Logcat (Space)"><svg><use id="pauseIcon" href="#i-pause"/></svg></button>
-      <button id="btnRestart" class="icon-btn" title="Restart Logcat"><svg><use href="#i-restart"/></svg></button>
-      <button id="btnEnd" class="icon-btn" title="Scroll to End (End)"><svg><use href="#i-end"/></svg></button>
-      <button id="btnPrev" class="icon-btn" title="Previous Error"><svg><use href="#i-up"/></svg></button>
-      <button id="btnNext" class="icon-btn" title="Next Error"><svg><use href="#i-down"/></svg></button>
-      <span class="tool-sep"></span>
-      <button id="btnWrap" class="icon-btn" title="Soft-Wrap"><svg><use href="#i-wrap"/></svg></button>
-      <button id="btnImport" class="icon-btn" title="Import Logcat from File (Ctrl+O)"><svg><use href="#i-import"/></svg></button>
-      <button id="btnExport" class="icon-btn" title="Export Logcat to File (Ctrl+S)"><svg><use href="#i-export"/></svg></button>
-      <button id="btnFormat" class="icon-btn" title="Configure Logcat Formatting Options"><svg><use href="#i-settings"/></svg></button>
-      <span class="tool-sep"></span>
-      <button id="btnShot" class="icon-btn" title="Take Screenshot"><svg><use href="#i-camera"/></svg></button>
-      <button id="btnRecord" class="icon-btn" title="Record Screen"><svg><use id="recordIcon" href="#i-record"/></svg></button>
-      <button id="btnMirror" class="icon-btn" title="Device Mirroring"><svg><use href="#i-mirror"/></svg></button>
-    </nav>
-
-    <div class="log-wrap">
-      <div id="notice" class="notice" hidden></div>
-      <div id="findBar" class="find-bar" hidden>
-        <div id="findBox" class="query-box find-box">
-          <svg class="find-icon"><use href="#i-search"/></svg>
-          <input id="findInput" spellcheck="false" autocomplete="off" placeholder="Find in messages">
-          <span id="findCount" class="find-count"></span>
-          <button id="findCase" class="text-toggle" title="Match case">Cc</button>
-          <button id="findRegex" class="text-toggle" title="Regular expression">.*</button>
-        </div>
-        <button id="findPrev" class="icon-btn small" title="Previous match (Shift+Enter)"><svg><use href="#i-up"/></svg></button>
-        <button id="findNext" class="icon-btn small" title="Next match (Enter)"><svg><use href="#i-down"/></svg></button>
-        <button id="findClose" class="icon-btn small" title="Close (Esc)"><svg><use href="#i-close"/></svg></button>
-      </div>
-      <div id="recBadge" class="rec-badge" hidden>
-        <span class="rec-dot"></span>
-        <span id="recText">REC</span>
-        <button id="recStop" class="rec-stop" title="Stop recording"><svg><use href="#i-stop"/></svg> Stop</button>
-      </div>
-      <main id="log" tabindex="0">
-        <span id="probe" aria-hidden="true">0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</span>
-        <div id="spacer"></div>
-        <div id="rows"></div>
-      </main>
-      <div id="empty" class="empty" hidden></div>
-      <button id="follow" class="follow-btn" hidden title="Scroll to End (End)"><svg><use href="#i-end"/></svg></button>
-    </div>
-
-    <div id="mirrorSplit" class="splitter" hidden></div>
-    <aside id="mirror" class="mirror" hidden>
-      <div class="mirror-bar">
-        <span id="mirrorTitle" class="mirror-title">Device</span>
-        <span class="spacer"></span>
-        <button class="icon-btn small" data-act="power" title="Power"><svg><use href="#i-power"/></svg></button>
-        <button class="icon-btn small" data-act="volup" title="Volume Up"><svg><use href="#i-volup"/></svg></button>
-        <button class="icon-btn small" data-act="voldown" title="Volume Down"><svg><use href="#i-voldown"/></svg></button>
-        <button class="icon-btn small" data-act="rotate" title="Rotate"><svg><use href="#i-rotate"/></svg></button>
-        <button class="icon-btn small" data-act="notifications" title="Notifications"><svg><use href="#i-bell"/></svg></button>
-        <span class="tool-sep vertical"></span>
-        <button class="icon-btn small" data-act="back" title="Back (right-click on screen)"><svg><use href="#i-back"/></svg></button>
-        <button class="icon-btn small" data-act="home" title="Home (middle-click on screen)"><svg><use href="#i-home"/></svg></button>
-        <button class="icon-btn small" data-act="recents" title="Overview"><svg><use href="#i-recents"/></svg></button>
-        <span class="tool-sep vertical"></span>
-        <button class="icon-btn small" data-act="restart" title="Restart mirroring"><svg><use href="#i-restart"/></svg></button>
-        <button class="icon-btn small" data-act="close" title="Close"><svg><use href="#i-close"/></svg></button>
-      </div>
-      <div id="mirrorStage" class="mirror-stage">
-        <canvas id="mirrorCanvas" hidden></canvas>
-        <div id="mirrorStatus" class="mirror-status"></div>
-        <textarea id="mirrorInput" class="mirror-input" aria-label="Keyboard input for the device" spellcheck="false" autocomplete="off"></textarea>
-      </div>
-    </aside>
-  </div>
-
-  <div id="suggest" class="menu suggest" hidden></div>
-  <div id="toast" class="toast" hidden></div>
-
-  <template id="helpTpl">
-    <div class="help">
-      <div class="help-title">Logcat query syntax</div>
-      <table>
-        <tr><td><code>tag:Foo</code></td><td>Tag contains <i>Foo</i></td></tr>
-        <tr><td><code>tag=:Foo</code></td><td>Tag is exactly <i>Foo</i></td></tr>
-        <tr><td><code>tag~:^Foo.*</code></td><td>Tag matches a regex</td></tr>
-        <tr><td><code>-tag:Foo</code></td><td>Exclude (works with any key)</td></tr>
-        <tr><td><code>package:com.example</code></td><td>Package (use <code>package:mine</code> for installed apps)</td></tr>
-        <tr><td><code>process:</code> <code>message:</code> <code>line:</code></td><td>Process name, message text, whole line</td></tr>
-        <tr><td><code>level:WARN</code></td><td>Minimum level (V, D, I, W, E, A)</td></tr>
-        <tr><td><code>age:5m</code></td><td>Newer than 30s, 5m, 2h, 1d…</td></tr>
-        <tr><td><code>is:crash</code> <code>is:stacktrace</code></td><td>Crashes, stack-trace lines</td></tr>
-        <tr><td><code>some text</code></td><td>Free text in tag, package or message</td></tr>
-        <tr><td><code>a | b</code>, <code>a &amp; b</code>, <code>( )</code></td><td>Or, and, grouping. Terms are AND-ed; repeated keys like <code>tag:a tag:b</code> are OR-ed</td></tr>
-        <tr><td><code>"quoted text"</code></td><td>Values with spaces or special characters</td></tr>
-      </table>
-    </div>
-  </template>
-
-  <!-- app.js / app.css are bundled from main.ts by scripts/build.mjs -->
+  <!-- app.js / app.css are bundled from main.tsx by scripts/build.mjs -->
   <script src="app.js"></script>
 </body>
 </html>

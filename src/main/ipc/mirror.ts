@@ -3,7 +3,7 @@
 import { ipcMain, type IpcMainEvent } from 'electron';
 import { IPC } from '../../shared/channels';
 import type { MirrorOptions } from '../../shared/types';
-import { MirrorSession } from '../mirror/mirrorSession';
+import { MirrorSession } from '../mirror/MirrorSession';
 import { addMirror, forgetMirror, getMirror, sessionKey, stopMirror, watchSender } from '../sessions';
 
 export function registerMirrorHandlers(): void {
