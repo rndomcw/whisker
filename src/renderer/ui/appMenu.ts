@@ -1,5 +1,5 @@
-// The ☰ button in the header: pops up the application menu (File, View), which the custom title bar
-// hides on Windows/Linux. Pressing and releasing Alt on its own opens it too, like a native menu bar.
+// The Whisker name and logo in the header: clicking them pops up the application menu (File, Capture,
+// View), which the custom title bar hides on Windows/Linux. Pressing and releasing Alt on its own opens it too, like a native menu bar.
 
 import { api } from '../api';
 import { el } from '../dom';

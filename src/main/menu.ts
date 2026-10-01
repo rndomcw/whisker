@@ -1,4 +1,4 @@
-// Application menu. On Windows/Linux the custom title bar hides the menu bar, so the ☰ button in the
+// Application menu. On Windows/Linux the custom title bar hides the menu bar, so the Whisker logo in the
 // header pops it up instead; it also provides the keyboard shortcuts.
 
 import { BrowserWindow, ipcMain, Menu, type BaseWindow, type MenuItemConstructorOptions } from 'electron';

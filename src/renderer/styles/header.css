@@ -14,9 +14,22 @@ body.darwin .header { padding-left: 80px; }                      /* room for the
 .header > *:not(.drag-fill) { -webkit-app-region: no-drag; }
 .drag-fill { flex: 1; align-self: stretch; }
 
-.app-menu-btn { margin-left: -6px; }
-body.darwin .app-menu-btn { display: none; }                    /* macOS shows the menu at the top of the screen */
-.panel-title { font-weight: 600; margin-right: 10px; }
+/* The product name and logo; on Windows/Linux, clicking them opens the application menu. */
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  margin: 0 8px 0 -6px;
+  padding: 0 6px;
+  border-radius: 5px;
+  color: var(--fg);
+}
+.app-brand:hover { background: var(--hover); }
+.app-brand:active { background: var(--press); }
+body.darwin .app-brand { pointer-events: none; }   /* macOS shows the menu at the top of the screen */
+.panel-title { font-size: 14px; font-weight: 500; }
+.app-logo { width: 14px; height: 14px; flex: none; }
 
 .tabs { display: flex; gap: 2px; min-width: 0; overflow: hidden; }
 .tab {
