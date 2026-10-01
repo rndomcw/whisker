@@ -5,6 +5,7 @@
 // Usage: node scripts/build.mjs [--watch]
 
 import { context, build } from 'esbuild';
+import { solidPlugin } from 'esbuild-plugin-solid';
 import { cp, mkdir, rm } from 'node:fs/promises';
 
 const watch = process.argv.includes('--watch');
@@ -35,10 +36,11 @@ const configs = [
   },
   {
     ...common,
-    entryPoints: ['src/renderer/main.ts'],
+    entryPoints: ['src/renderer/main.tsx'],
     outfile: 'out/renderer/app.js',
     platform: 'browser',
     format: 'iife',
+    plugins: [solidPlugin()], // compiles the JSX with babel-preset-solid
   },
 ];
 

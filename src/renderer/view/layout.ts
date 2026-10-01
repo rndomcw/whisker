@@ -1,11 +1,18 @@
 // Row geometry for the virtualized log view: fixed-height rows, or variable heights when soft-wrapping.
 
 import { COLW, ROW_H } from '../constants';
-import { els } from '../dom';
 import type { LogEntry } from '../log/entry';
-import { settings } from '../settings';
-import { state } from '../state';
-import type { Tab } from '../tabs/Tab';
+import { state } from '../state/app';
+import { settings } from '../state/settings';
+import type { Tab } from '../state/Tab';
+
+/** The log's scroll container and its 100-character probe, set by components/log/LogView.tsx. */
+const els = { log: null as HTMLElement | null, probe: null as HTMLElement | null };
+
+export function setLayoutElements(log: HTMLElement, probe: HTMLElement): void {
+  els.log = log;
+  els.probe = probe;
+}
 
 export const metrics = {
   /** Width + format the values below were computed for. */
@@ -17,6 +24,7 @@ export const metrics = {
 
 /** Recomputes the wrap width when the view size or visible columns change. */
 export function measure(): void {
+  if (!els.log || !els.probe) return;
   const w = els.log.clientWidth;
   const f = settings.format;
   const key = `${w}|${f.date}|${f.pid}|${f.tag}|${f.pkg}`;

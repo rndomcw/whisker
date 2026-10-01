@@ -1,7 +1,7 @@
 // Screen recording: a video-only scrcpy session whose H.264 frames are kept in memory and muxed to MP4.
 
 import type { MirrorEvent, RecordEvent, TrimRange } from '../../shared/types';
-import { MirrorSession } from '../mirror/mirrorSession';
+import { MirrorSession } from '../mirror/MirrorSession';
 import { muxMp4, parseConfig, type Sample, toAvcc } from './mp4';
 
 /** Stop on our own after this long, to bound memory. */
