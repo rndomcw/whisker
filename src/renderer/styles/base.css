@@ -3,6 +3,9 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
+/* Scrollbars blend into whatever they scroll: a transparent track and a muted thumb. */
+* { scrollbar-color: color-mix(in srgb, var(--dim) 60%, transparent) transparent; }
+
 html, body {
   margin: 0;
   height: 100%;
