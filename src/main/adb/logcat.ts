@@ -2,7 +2,7 @@
 
 import { spawn } from 'node:child_process';
 import type { LogLine, StreamEnd, StreamOptions } from '../../shared/types';
-import { ADB, runAdb } from './adb';
+import { ADB_NOT_FOUND, adbPath, runAdb } from './adb';
 
 // threadtime: "09-30 12:34:56.789  1234  5678 D Tag     : message" (optionally with a "2026-" year prefix)
 const LINE_RE = /^(?:(\d{4})-)?(\d\d-\d\d)\s+(\d\d:\d\d:\d\d\.\d+)\s+(\d+)\s+(\d+)\s+([VDIWEFAS])\s+(.*?)\s*:(?: (.*))?$/;
@@ -39,7 +39,12 @@ export function streamLogcat(
   // -T keeps streaming (unlike -t). Resume from a timestamp after a reconnect, else show recent history.
   args.push('-T', since || String(Number(tail) || 5000));
 
-  const child = spawn(ADB, args, { windowsHide: true });
+  const adb = adbPath();
+  if (!adb) {
+    setTimeout(() => onEnd({ error: ADB_NOT_FOUND }));
+    return () => {};
+  }
+  const child = spawn(adb, args, { windowsHide: true });
   let partial = '';
   let pending: LogLine[] = [];
   let stderr = '';
@@ -73,7 +78,7 @@ export function streamLogcat(
     }
   };
 
-  child.on('error', err => finish({ error: `failed to run adb (${ADB}): ${err.message}` }));
+  child.on('error', err => finish({ error: `failed to run adb (${adb}): ${err.message}` }));
   child.on('close', code => finish({ code, error: stderr.trim() || `logcat exited (code ${code})` }));
 
   return () => {

@@ -14,6 +14,8 @@ function invoke<T>(channel: string, ...args: unknown[]): Promise<T> {
 const api: WhiskerApi = {
   platform: process.platform,
   devices: () => invoke(IPC.devices),
+  locateAdb: () => invoke(IPC.locateAdb),
+  openAdbDownload: () => ipcRenderer.send(IPC.openAdbDownload),
   deviceInfo: serial => invoke(IPC.deviceInfo, serial),
   procs: serial => invoke(IPC.procs, serial),
   packages: serial => invoke(IPC.packages, serial),

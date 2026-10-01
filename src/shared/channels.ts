@@ -4,6 +4,8 @@ import type { MenuCommand } from './types';
 
 export const IPC = {
   devices: 'adb:devices',
+  locateAdb: 'adb:locate',
+  openAdbDownload: 'adb:download',
   deviceInfo: 'adb:info',
   procs: 'adb:procs',
   packages: 'adb:packages',

@@ -12,8 +12,10 @@ export const devices = createMutable({
   list: [] as Device[],
   /** Device properties by serial; null while being fetched. */
   info: {} as Record<string, DeviceInfo | null>,
-  /** Last adb error, e.g. adb not found. */
+  /** Last adb error. */
   error: '',
+  /** adb isn't installed or wasn't found. */
+  adbMissing: false,
   /** The device list has been read at least once. */
   loaded: false,
 });
@@ -66,7 +68,9 @@ export function deviceName(serial: string): string {
 export async function refreshDevices(): Promise<void> {
   let list: Device[];
   try {
-    list = await api.devices();
+    const res = await api.devices();
+    list = res.devices;
+    devices.adbMissing = res.adbMissing;
     devices.error = '';
   } catch (e) {
     devices.error = (e as Error).message;

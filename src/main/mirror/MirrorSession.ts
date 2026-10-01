@@ -8,7 +8,7 @@ import net from 'node:net';
 import path from 'node:path';
 import { app } from 'electron';
 import type { MirrorEvent, MirrorOptions } from '../../shared/types';
-import { ADB, runAdb } from '../adb/adb';
+import { requireAdb, runAdb } from '../adb/adb';
 import { ByteQueue } from './ByteQueue';
 import {
   CODEC_H264, DEVICE_NAME_LENGTH, DEVICE_SERVER_PATH, FLAG_CONFIG, FLAG_KEY_FRAME, FLAG_SESSION, HEADER_LENGTH,
@@ -70,7 +70,7 @@ export class MirrorSession {
         `video_bit_rate=${bitRate}`, `max_fps=${maxFps}`, ...extraArgs,
       ];
       this.emit({ type: 'status', text: 'Starting scrcpy-server…' });
-      const server = spawn(ADB, ['-s', this.serial, 'shell',
+      const server = spawn(requireAdb(), ['-s', this.serial, 'shell',
         `CLASSPATH=${DEVICE_SERVER_PATH} app_process / com.genymobile.scrcpy.Server ${args.join(' ')}`],
       { windowsHide: true });
       this.server = server;

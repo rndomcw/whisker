@@ -1,14 +1,35 @@
 // Device queries and logcat streams.
 
-import { ipcMain, type IpcMainEvent } from 'electron';
+import { ipcMain, type IpcMainEvent, shell } from 'electron';
 import { IPC } from '../../shared/channels';
-import type { StreamOptions } from '../../shared/types';
+import { ADB_DOWNLOAD_URL, ADB_NOT_FOUND, type DeviceList, type StreamOptions } from '../../shared/types';
+import { chooseAdb } from '../adb/adb';
 import { deviceInfo, listDevices, listProcesses, userPackages } from '../adb/devices';
 import { clearLog, streamLogcat } from '../adb/logcat';
 import { addStream, forgetStream, sessionKey, stopStream, watchSender } from '../sessions';
+import { showOpen } from './dialogs';
 
 export function registerAdbHandlers(): void {
-  ipcMain.handle(IPC.devices, () => listDevices());
+  // A missing adb is an expected state, reported in the result rather than as an error.
+  ipcMain.handle(IPC.devices, async (): Promise<DeviceList> => {
+    try {
+      return { devices: await listDevices(), adbMissing: false };
+    } catch (err) {
+      if ((err as Error).message === ADB_NOT_FOUND) return { devices: [], adbMissing: true };
+      throw err;
+    }
+  });
+  ipcMain.handle(IPC.locateAdb, async e => {
+    const file = await showOpen(e, {
+      title: 'Locate adb',
+      properties: ['openFile'],
+      filters: process.platform === 'win32' ? [{ name: 'adb', extensions: ['exe'] }] : [],
+    });
+    if (!file) return null;
+    chooseAdb(file);
+    return file;
+  });
+  ipcMain.on(IPC.openAdbDownload, () => void shell.openExternal(ADB_DOWNLOAD_URL));
   ipcMain.handle(IPC.deviceInfo, (_e, serial: string) => deviceInfo(serial));
   ipcMain.handle(IPC.procs, (_e, serial: string) => listProcesses(serial));
   ipcMain.handle(IPC.packages, (_e, serial: string) => userPackages(serial));

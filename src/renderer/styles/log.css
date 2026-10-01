@@ -113,6 +113,22 @@ mark { background: var(--mark); color: inherit; border-radius: 2px; }
   padding: 20px;
 }
 
+/* Shown when adb can't be found. */
+.adb-missing {
+  max-width: 460px;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--fg-2);
+  pointer-events: auto;
+  user-select: text;
+}
+.adb-missing-title { font-size: 15px; font-weight: 600; color: var(--fg); }
+.adb-missing p { margin: 10px 0; line-height: 1.5; }
+.adb-missing-actions { display: flex; justify-content: center; gap: 8px; margin: 16px 0 6px; }
+.adb-missing-hint { color: var(--dim); font-size: 12px; }
+
 .follow-btn {
   position: absolute;
   right: 22px;

@@ -91,11 +91,15 @@ Android Studio's Logcat is great, but opening a full IDE just to read logs is sl
 
 ### Requirements
 - **Windows 10 or 11** (64-bit).
-- **adb**, from Google's [SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools). If you have Android Studio, you already have it. Whisker looks for adb in this order:
-  1. the `ADB` environment variable (the full path to `adb.exe`);
-  2. `ANDROID_HOME` or `ANDROID_SDK_ROOT`;
-  3. the default SDK folder, `%LOCALAPPDATA%\Android\Sdk`;
-  4. your `PATH`.
+- **adb**, from Google's [SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools). If you have Android Studio, you already have it.
+  - If Whisker can't find adb, it says so and offers a download link and a **Locate adb.exe…** button.
+  - It looks for adb in this order:
+    1. the `adb.exe` you chose with **Locate adb.exe…**;
+    2. the `ADB` environment variable (the full path to `adb.exe`);
+    3. `ANDROID_HOME` or `ANDROID_SDK_ROOT`;
+    4. the default SDK folder, `%LOCALAPPDATA%\Android\Sdk`;
+    5. your `PATH`.
+  - It checks again every few seconds, so installing Android Studio or choosing adb works without a restart. Changes to environment variables need a restart.
 - **An Android device with USB debugging on.** Turn on *Developer options* (tap *Build number* seven times), then *USB debugging*. Mirroring and recording need Android 5.0 or later.
 
 ### Install
@@ -136,7 +140,7 @@ Download the latest version from the [Releases page](https://github.com/<owner>/
 
 - Check that `adb devices` lists the device in a terminal.
 - If it shows **unauthorized**, unlock the device and accept the USB debugging prompt.
-- If adb isn't found, set the `ADB` environment variable to the full path of `adb.exe`, then restart Whisker.
+- If Whisker shows **adb not found**, install [Platform-Tools](https://developer.android.com/tools/releases/platform-tools), or click **Locate adb.exe…** and pick it in the `platform-tools` folder.
 - Try another cable or USB port. Some cables only charge.
 </details>
 

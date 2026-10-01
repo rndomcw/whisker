@@ -1,5 +1,17 @@
 // Types shared by the main process, the preload bridge and the renderer.
 
+/** The error message when adb can't be found. */
+export const ADB_NOT_FOUND = 'adb not found';
+
+/** Where to get adb: Google's SDK Platform-Tools. */
+export const ADB_DOWNLOAD_URL = 'https://developer.android.com/tools/releases/platform-tools';
+
+export interface DeviceList {
+  devices: Device[];
+  /** adb isn't installed, or wasn't found. */
+  adbMissing: boolean;
+}
+
 export interface Device {
   serial: string;
   /** adb state: "device", "offline", "unauthorized", … */
@@ -101,7 +113,11 @@ export interface MenuState {
 /** The API the preload script exposes to the renderer as `window.whisker`. */
 export interface WhiskerApi {
   platform: string;
-  devices(): Promise<Device[]>;
+  devices(): Promise<DeviceList>;
+  /** Lets the user pick adb.exe; resolves with its path, or null if cancelled. Rejects if it isn't adb. */
+  locateAdb(): Promise<string | null>;
+  /** Opens the Platform-Tools download page in the browser. */
+  openAdbDownload(): void;
   deviceInfo(serial: string): Promise<DeviceInfo>;
   procs(serial: string): Promise<ProcessList>;
   packages(serial: string): Promise<string[]>;

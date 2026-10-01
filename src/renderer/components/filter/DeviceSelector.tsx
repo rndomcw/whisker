@@ -27,7 +27,12 @@ function items(): MenuItem[] {
       action: () => t.setDevice(serial),
     };
   });
-  if (!list.length) list.push({ label: devices.error ? `adb error: ${devices.error}` : 'No connected devices', disabled: true });
+  if (!list.length) {
+    list.push({
+      label: devices.adbMissing ? 'adb not found' : devices.error ? `adb error: ${devices.error}` : 'No connected devices',
+      disabled: true,
+    });
+  }
   return list;
 }
 
