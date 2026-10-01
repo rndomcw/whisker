@@ -34,6 +34,8 @@ export const IPC = {
   saveScreenshotTo: 'capture:saveScreenshotTo',
   showInFolder: 'capture:showInFolder',
   openFolder: 'capture:openFolder',
+  appMenu: 'app:menu',
+  menuState: 'app:menuState',
 } as const;
 
 export const menuChannel = (cmd: MenuCommand) => `menu:${cmd}`;

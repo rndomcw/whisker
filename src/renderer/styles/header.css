@@ -14,6 +14,8 @@ body.darwin .header { padding-left: 80px; }                      /* room for the
 .header > *:not(.drag-fill) { -webkit-app-region: no-drag; }
 .drag-fill { flex: 1; align-self: stretch; }
 
+.app-menu-btn { margin-left: -6px; }
+body.darwin .app-menu-btn { display: none; }                    /* macOS shows the menu at the top of the screen */
 .panel-title { font-weight: 600; margin-right: 10px; }
 
 .tabs { display: flex; gap: 2px; min-width: 0; overflow: hidden; }

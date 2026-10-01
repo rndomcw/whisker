@@ -43,10 +43,16 @@ export async function autoSaveRecording(id: number, serial: string, note = ''): 
   }
 }
 
+/** Refreshes the toolbar indicators and the application menu. */
+function changed(): void {
+  onChange();
+  api.setMenuState({ autoSave: isAutoSave(), captureFolder: captureFolder() });
+}
+
 function setAutoSave(on: boolean): void {
   settings.capture.autoSave = on;
   saveSettings();
-  onChange();
+  changed();
   toast(on ? `Auto-save on: captures go to ${captureFolder()}` : 'Auto-save off: captures open a preview');
 }
 
@@ -55,11 +61,11 @@ async function chooseFolder(): Promise<void> {
   if (!folder) return;
   settings.capture.folder = folder;
   saveSettings();
-  onChange();
+  changed();
   toast('Auto-save folder: ' + folder);
 }
 
-/** Menu items for the capture buttons' context menu and the settings menu. */
+/** Menu items for the capture buttons' context menu (the application menu's Capture menu has the same). */
 export function captureMenuItems(): MenuItem[] {
   return [
     { label: 'Auto-save Captures (skip preview)', checked: isAutoSave(), action: () => setAutoSave(!isAutoSave()) },
@@ -70,6 +76,9 @@ export function captureMenuItems(): MenuItem[] {
 
 export async function initCaptureSettings(opts: { onChange: () => void }): Promise<void> {
   onChange = opts.onChange;
+  api.onMenu('toggleAutoSave', () => setAutoSave(!isAutoSave()));
+  api.onMenu('chooseCaptureFolder', () => void chooseFolder());
+  api.onMenu('openCaptureFolder', () => api.openFolder(captureFolder()));
   defaultFolder = await api.defaultCaptureFolder();
-  onChange();
+  changed();
 }

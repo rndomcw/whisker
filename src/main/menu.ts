@@ -1,10 +1,14 @@
-// Application menu. The menu bar is hidden by the custom title bar; it still provides the shortcuts.
+// Application menu. On Windows/Linux the custom title bar hides the menu bar, so the ☰ button in the
+// header pops it up instead; it also provides the keyboard shortcuts.
 
-import { Menu, type BaseWindow, type MenuItemConstructorOptions } from 'electron';
-import { menuChannel } from '../shared/channels';
-import type { MenuCommand } from '../shared/types';
+import { BrowserWindow, ipcMain, Menu, type BaseWindow, type MenuItemConstructorOptions } from 'electron';
+import { IPC, menuChannel } from '../shared/channels';
+import type { MenuCommand, MenuState } from '../shared/types';
 
 const isMac = process.platform === 'darwin';
+
+/** Settings the menu shows; they live in the renderer, which sends them whenever they change. */
+let menuState: MenuState = { autoSave: false, captureFolder: '' };
 
 const toRenderer = (cmd: MenuCommand) => (_item: unknown, win: BaseWindow | undefined) => {
   if (win && 'webContents' in win) (win as Electron.BrowserWindow).webContents.send(menuChannel(cmd));
@@ -28,6 +32,20 @@ export function buildMenu(): void {
     // On Windows/Linux, copy/paste shortcuts work without an Edit menu; macOS needs one.
     ...(isMac ? [{ role: 'editMenu' } as const] : []),
     {
+      label: 'Capture',
+      submenu: [
+        {
+          label: 'Auto-save Captures (skip preview)', type: 'checkbox', checked: menuState.autoSave,
+          click: toRenderer('toggleAutoSave'),
+        },
+        { type: 'separator' },
+        { label: 'Auto-save Folder', enabled: false },
+        { label: menuState.captureFolder || '(default)', enabled: false },
+        { label: 'Change Auto-save Folder…', click: toRenderer('chooseCaptureFolder') },
+        { label: 'Open Auto-save Folder', click: toRenderer('openCaptureFolder') },
+      ],
+    },
+    {
       label: 'View',
       submenu: [
         { role: 'reload' },
@@ -42,4 +60,16 @@ export function buildMenu(): void {
     },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
+export function registerMenuHandlers(): void {
+  ipcMain.on(IPC.appMenu, (e, x: number, y: number) => {
+    const window = BrowserWindow.fromWebContents(e.sender);
+    if (window) Menu.getApplicationMenu()?.popup({ window, x, y });
+  });
+  ipcMain.on(IPC.menuState, (_e, state: MenuState) => {
+    if (state.autoSave === menuState.autoSave && state.captureFolder === menuState.captureFolder) return;
+    menuState = state;
+    buildMenu();
+  });
 }

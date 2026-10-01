@@ -66,6 +66,7 @@ build/             App icon
 ## Features
 
 - **Studio layout**
+  - **Menu:** the ☰ button at the top left (or pressing `Alt`) opens the File, Capture and View menus: new tab, import/export, reset settings, auto-save and its folder, reload, DevTools, zoom and full screen. On macOS they are in the menu bar at the top of the screen.
   - **Tabs:** each tab has its own device and filter. `+` or `Ctrl+T` adds a tab; double-click a tab to rename it; middle-click closes it.
   - **Device picker** in the "Castles S1U2-M4 (serial) Android 13, API 33" style. It notices devices being plugged in or removed and reconnects on its own, without repeating lines.
   - **Columns:** date and time, PID-TID, a tag colored per tag, package, a level badge, and the message colored by level.
@@ -101,9 +102,9 @@ build/             App icon
     - Recordings use the bundled scrcpy at the device's resolution (video only, up to 30 minutes).
     - They are written as MP4 directly, without re-encoding; trimming uses an MP4 edit list, so it is frame-accurate.
     - Rotating the device ends a recording, because one MP4 track can't change size.
-  - **Auto-save:** right-click the screenshot or record button, or use the formatting menu.
+  - **Auto-save:** use the ☰ menu's **Capture** menu, or right-click the screenshot or record button.
     - With **Auto-save Captures** on, captures skip the preview and go straight to the auto-save folder (default `Pictures\Whisker`), so you can take screenshots back to back.
-    - A green dot on the buttons shows it's on, and each save shows a *Show in Folder* link.
+    - The buttons' tooltips show where captures go, and each save shows a *Show in Folder* link.
     - Files taken in the same second get `-2`, `-3`, … suffixes instead of overwriting each other.
 - **Device mirroring**: the phone button at the bottom of the left toolbar opens a screen panel, like Android Studio's Running Devices. It uses the bundled [scrcpy](https://github.com/Genymobile/scrcpy) v4.0 server (`vendor/scrcpy`); scrcpy doesn't need to be installed.
   - Mouse: click or drag to tap or swipe. The wheel scrolls, right-click is Back, and middle-click is Home.

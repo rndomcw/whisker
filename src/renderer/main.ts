@@ -11,6 +11,7 @@ import { state } from './state';
 import { Tab } from './tabs/Tab';
 import { activateTab, addTab, closeTab, initTabStrip } from './tabs/tabStrip';
 import { initStreamRouting } from './tabs/streams';
+import { initAppMenu } from './ui/appMenu';
 import { initDeviceSelector } from './ui/deviceSelector';
 import { applyFormat } from './ui/formatMenu';
 import { initKeyboard } from './ui/keyboard';
@@ -27,6 +28,7 @@ const PROCESS_POLL_MS = 3000;
 document.body.classList.add(api.platform === 'win32' ? 'win' : api.platform);
 
 initMenus();
+initAppMenu();
 initStreamRouting();
 initTabStrip();
 initDeviceSelector();

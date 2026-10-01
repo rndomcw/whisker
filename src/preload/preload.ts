@@ -40,6 +40,8 @@ const api: WhiskerApi = {
   showInFolder: filePath => ipcRenderer.send(IPC.showInFolder, filePath),
   openFolder: folder => ipcRenderer.send(IPC.openFolder, folder),
   onRecord: cb => { ipcRenderer.on(IPC.recordEvent, (_e, id: number, event: RecordEvent) => cb(id, event)); },
+  showAppMenu: (x, y) => ipcRenderer.send(IPC.appMenu, Math.round(x), Math.round(y)),
+  setMenuState: state => ipcRenderer.send(IPC.menuState, state),
   onMenu: (cmd, cb) => { ipcRenderer.on(menuChannel(cmd), () => cb()); },
   mirrorStart: (id, serial, opts) => ipcRenderer.send(IPC.mirrorStart, id, serial, opts),
   mirrorStop: id => ipcRenderer.send(IPC.mirrorStop, id),

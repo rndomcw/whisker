@@ -33,11 +33,7 @@ export function renderToolbar(): void {
   els.record.disabled = !online && !recording;
   els.record.classList.toggle('recording', recording);
   els.recordIcon.setAttribute('href', recording ? '#i-stop' : '#i-record');
-  // A dot on both capture buttons shows that auto-save is on.
-  const auto = isAutoSave();
-  const autoHint = auto ? `\nAuto-save to ${captureFolder()} (right-click for options)` : '\nRight-click for auto-save options';
-  els.shot.classList.toggle('auto-save', auto);
-  els.record.classList.toggle('auto-save', auto);
+  const autoHint = isAutoSave() ? `\nAuto-save to ${captureFolder()} (right-click for options)` : '\nRight-click for auto-save options';
   els.shot.title = 'Take Screenshot' + autoHint;
   els.record.title = (recording ? 'Stop Recording' : 'Record Screen') + autoHint;
 }

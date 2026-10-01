@@ -88,7 +88,15 @@ export interface RecordingResult {
   height: number;
 }
 
-export type MenuCommand = 'newTab' | 'import' | 'save' | 'resetSettings';
+export type MenuCommand =
+  | 'newTab' | 'import' | 'save' | 'resetSettings'
+  | 'toggleAutoSave' | 'chooseCaptureFolder' | 'openCaptureFolder';
+
+/** Renderer settings shown in the application menu. */
+export interface MenuState {
+  autoSave: boolean;
+  captureFolder: string;
+}
 
 /** The API the preload script exposes to the renderer as `window.whisker`. */
 export interface WhiskerApi {
@@ -132,6 +140,10 @@ export interface WhiskerApi {
   onRecord(cb: (id: number, event: RecordEvent) => void): void;
 
   onMenu(cmd: MenuCommand, cb: () => void): void;
+  /** Pops up the application menu at a point in the window (the menu bar is hidden on Windows/Linux). */
+  showAppMenu(x: number, y: number): void;
+  /** Updates the settings shown in the application menu. */
+  setMenuState(state: MenuState): void;
   mirrorStart(id: number, serial: string, opts: MirrorOptions): void;
   mirrorStop(id: number): void;
   mirrorControl(id: number, data: Uint8Array): void;
