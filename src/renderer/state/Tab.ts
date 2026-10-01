@@ -81,7 +81,8 @@ export class Tab {
     this.device$ = sig(opts.device || '');
     this.query$ = sig(opts.query || '');
     this.caseSens$ = sig(!!opts.caseSens);
-    this.procSel$ = sig(opts.procSel || (opts.proc ? [opts.proc] : []));
+    // Copied: the options may come from the settings store, whose objects are proxies.
+    this.procSel$ = sig((opts.procSel || (opts.proc ? [opts.proc] : [])).map(p => ({ kind: p.kind, value: p.value })));
     this.file = opts.file || null;
     this.filter$ = sig(compileQuery(this.query, this.caseSens));
   }

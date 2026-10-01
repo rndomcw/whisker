@@ -80,7 +80,7 @@ function ScreenshotDialog(props: { serial: string }) {
   }
 
   function onKey(ev: KeyboardEvent): boolean {
-    if ((ev.target as HTMLElement).matches('input, textarea')) return false; // text tool typing
+    if (ev.target instanceof Element && ev.target.matches('input, textarea')) return false; // text tool typing
     const mod = ev.ctrlKey || ev.metaKey;
     const k = ev.key.toLowerCase();
     if (mod && k === 'z') { if (ev.shiftKey) editor.redo(); else editor.undo(); return true; }
