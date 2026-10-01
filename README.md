@@ -1,131 +1,175 @@
-# Whisker
+<p align="center">
+  <img src="build/icon.png" width="96" alt="Whisker icon">
+</p>
 
-Whisker is a desktop Android logcat viewer with device mirroring (Electron), modeled on Android Studio's Logcat panel, so you can debug your app without opening Android Studio.
+<h1 align="center">Whisker</h1>
 
-## Develop
+<p align="center">
+  A desktop Android logcat viewer with screen mirroring.<br>
+  It works like Android Studio's Logcat panel, so you can debug your app without opening Android Studio.
+</p>
 
-Whisker is written in TypeScript. esbuild bundles it into `out/`, and `tsc` checks the types.
+<p align="center">
+  <a href="https://github.com/<owner>/whisker/releases/latest">Download</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#getting-started">Getting started</a> ·
+  <a href="#troubleshooting">Troubleshooting</a>
+</p>
 
-```bash
-npm install
-npm start
-```
+![Whisker showing an app's log with a crash](docs/images/main.png)
 
-| Command | What it does |
-| --- | --- |
-| `npm start` | Builds into `out/` and starts the app |
-| `npm run watch` | Rebuilds on every change; restart the app, or press `Ctrl+R` for renderer changes |
-| `npm run typecheck` | Type-checks the main process and the renderer separately |
-| `npm run build` | Bundles `src/` into `out/` |
+## Why Whisker?
 
-If `npm start` reports that Electron failed to install, run `node node_modules/electron/install.js` to download the Electron binary.
+Android Studio's Logcat is great, but opening a full IDE just to read logs is slow, especially on a test bench, for QA, or when you work on the device rather than the code. Whisker gives you the same log view as a small standalone app:
 
-## Build
-
-```bash
-npm run dist
-```
-
-This type-checks, bundles and writes an installer and a portable `.exe` to `dist/`. `npm run pack` builds only the unpacked app, in `dist/win-unpacked/`, which is faster to test.
-
-The app icon is drawn in `build/icon.svg`. After editing it, run `npm run icon` to regenerate `build/icon.png` and `build/icon.ico`.
-
-adb is found through the `ADB` environment variable, then `ANDROID_HOME` or `ANDROID_SDK_ROOT`, then the default SDK location (`%LOCALAPPDATA%\Android\Sdk`), and finally `PATH`.
-
-## Layout
-
-```
-src/
-  shared/          Types and IPC channel names used by both processes
-  main/            Electron main process
-    main.ts          App lifecycle
-    window.ts        Main window and title bar
-    menu.ts          Menu and keyboard accelerators
-    ipc/             IPC handlers behind window.whisker, one file per area (adb, mirror, files, capture)
-    sessions.ts      Per-window logcat streams, mirror sessions and recordings, cleaned up on reload/close
-    migrate.ts       Copies settings from the old "Logcat Viewer" name
-    adb/             Finding/running adb, device queries, logcat streaming and parsing
-    mirror/          scrcpy-server session: protocol constants, stream reader
-    capture/         Screen recording, MP4 muxer (H.264, edit-list trimming), clipboard helpers
-  preload/         Exposes the typed window.whisker API
-  renderer/        The UI
-    main.ts          Entry point: initializes the modules and starts polling
-    tabs/            Tab (lines, filters, streaming), tab strip, stream routing
-    query/           Filter query tokenizer and compiler (Android Studio syntax)
-    log/             Log entry model and package/process selections
-    view/            Virtualized rendering, row layout, hover, status messages
-    ui/              Device/process pickers, query bar, autocomplete, toolbar, menus, keyboard
-    mirror/          Mirror panel: WebCodecs decoding, input, control messages
-    capture/         Screenshot editor, recording preview/trim, REC badge, modal dialog
-    styles/          CSS, split by area
-scripts/           build.mjs (esbuild) and make-icon.js
-vendor/scrcpy/     Bundled scrcpy-server v4.0 and its Apache-2.0 license
-build/             App icon
-```
+- the same columns, colors and filter syntax as Android Studio;
+- your app's logs followed by package name across restarts;
+- the device screen mirrored next to the log;
+- screenshots and screen recordings.
 
 ## Features
 
-- **Studio layout**
-  - **Menu:** the ☰ button at the top left (or pressing `Alt`) opens the File, Capture and View menus: new tab, import/export, reset settings, auto-save and its folder, reload, DevTools, zoom and full screen. On macOS they are in the menu bar at the top of the screen.
-  - **Tabs:** each tab has its own device and filter. `+` or `Ctrl+T` adds a tab; double-click a tab to rename it; middle-click closes it.
-  - **Device picker** in the "Castles S1U2-M4 (serial) Android 13, API 33" style. It notices devices being plugged in or removed and reconnects on its own, without repeating lines.
-  - **Columns:** date and time, PID-TID, a tag colored per tag, package, a level badge, and the message colored by level.
-  - **Process markers:** `PROCESS STARTED` and `PROCESS ENDED` lines, as Studio shows them.
-- **Package/process dropdown** next to the device picker. It lists running apps with their PIDs, apps that have stopped, installed apps (`package:mine`) and system processes, with a search box.
-  - It supports **multiple selection**: click or press Enter to check several items; the menu stays open. Checked items are listed under *Selected* at the top, and lines from any of them are shown.
-  - It matches by name, so the view keeps following your app across restarts and new PIDs.
-  - If the app isn't running, the view waits for it to start. Type a package that hasn't started yet and press Enter to wait for it.
-  - It combines with the filter bar. The choice is saved per tab, and right-clicking a line offers **Show only package: …**.
-- **Filter bar with Studio's query syntax** (click `?` in the app for the full reference):
-  - `tag:`, `package:`, `process:`, `message:`, `line:`, with `=:` for an exact match and `~:` for a regex.
-  - `-key:` excludes; `level:`, `age:5m`, `is:crash` and `is:stacktrace` are also supported.
-  - Free text, `|`, `&`, parentheses and quoted values work too.
-  - `package:mine` matches the third-party apps installed on the device.
-  - `Ctrl+Space` shows suggestions: keys, running packages and processes, seen tags, and levels.
-  - Filters can be saved as favorites (☆). The funnel icon lists favorites and filter history. `Cc` makes matching case-sensitive.
-- **Side toolbar**
-  - Log controls: Clear (also clears the device's log buffer), Pause, Restart, Scroll to End, and Previous/Next Error.
-  - Soft-Wrap.
-  - Import: opens a log file in a new tab.
-  - Export: writes the filtered lines to a file.
-  - Formatting: Standard or Compact view, column toggles, the log buffer, and **Reset All Settings…**.
-    Settings (tabs, filters, favorites, display options, mirror panel) are remembered between launches in `%APPDATA%\Whisker`; reset returns them to the defaults. Settings from the earlier "Logcat Viewer" name are copied over on first launch.
-  - **Take Screenshot** opens a preview where you can edit the image before copying or saving it:
-    - rotate and crop;
-    - annotate with pen, arrow, rectangle and text in six colors;
-    - **pixelate** areas to hide sensitive data such as card numbers;
-    - undo/redo, and recapture.
-    Shortcuts: `C` `P` `A` `R` `T` `X` pick a tool; `Ctrl+Z`/`Ctrl+Y` undo/redo; `Ctrl+C` copies and `Ctrl+S` saves.
-  - **Record Screen** starts recording; a REC badge shows the time and size, and the button or badge stops it.
-    - A preview then plays the video. Drag the handles on the timeline to trim it; *Play Selection* plays the trimmed part.
-    - **Copy to Clipboard** copies the MP4 file, so you can paste it into Explorer, Teams, Slack, and so on. **Save…** writes it.
-    - Recordings use the bundled scrcpy at the device's resolution (video only, up to 30 minutes).
-    - They are written as MP4 directly, without re-encoding; trimming uses an MP4 edit list, so it is frame-accurate.
-    - Rotating the device ends a recording, because one MP4 track can't change size.
-  - **Auto-save:** use the ☰ menu's **Capture** menu, or right-click the screenshot or record button.
-    - With **Auto-save Captures** on, captures skip the preview and go straight to the auto-save folder (default `Pictures\Whisker`), so you can take screenshots back to back.
-    - The buttons' tooltips show where captures go, and each save shows a *Show in Folder* link.
-    - Files taken in the same second get `-2`, `-3`, … suffixes instead of overwriting each other.
-- **Device mirroring**: the phone button at the bottom of the left toolbar opens a screen panel, like Android Studio's Running Devices. It uses the bundled [scrcpy](https://github.com/Genymobile/scrcpy) v4.0 server (`vendor/scrcpy`); scrcpy doesn't need to be installed.
-  - Mouse: click or drag to tap or swipe. The wheel scrolls, right-click is Back, and middle-click is Home.
-  - Keyboard: click the screen, then type. Chinese IME input works, and `Ctrl+V` pastes the PC clipboard into the device.
-  - Panel buttons: Power, Volume, Rotate, Notifications, Back, Home, Overview and Restart. Drag the divider to resize the panel.
-  - The panel follows the active tab's device.
-- **Right-click a line** to copy it, copy just the message, or filter or exclude its tag or package.
-  - **Exclude message** hides every line with the same message. It matches the text before the first number, so lines that differ only in counters are hidden too.
-- Terminal color codes that some SDKs put in log messages (`[093m … [0m`) are removed.
-- **Selecting lines:** click, Shift-click and Ctrl-click, then `Ctrl+C` to copy.
-- **Performance:** keeps the most recent 200k lines per tab and only draws the rows on screen.
+### Logcat, the way Android Studio shows it
+- **Studio columns:** time, PID-TID, a colored tag, package, a level badge, and the message colored by level.
+- **Process markers:** `PROCESS STARTED` and `PROCESS ENDED` lines, as Android Studio shows them.
+- **Tabs:** each tab has its own device and filter. `Ctrl+T` adds one, a double-click renames it, and a middle-click closes it.
+- **Reconnects:** Whisker notices when devices are plugged in or removed, and reconnects without repeating lines.
+- **Performance:** each tab keeps the latest 200,000 lines and only draws the rows on screen, so it stays fast with chatty devices.
+- **Colored logs:** terminal color codes that some SDKs write into messages (`[093m … [0m`) are removed.
 
-## Shortcuts
+### Filters
+![Filtering by package and level](docs/images/filter.png)
+
+- **Package/process picker:**
+  - It lists running apps with their PIDs, apps that have stopped, your installed apps, and system processes.
+  - Select several to see their logs together.
+  - It matches by name, so the view keeps following your app when it restarts with a new PID, and it waits for an app that hasn't started yet.
+- **Android Studio's query syntax:**
+  - `tag:`, `package:`, `process:`, `message:`, `line:`, `level:` and `age:5m`, plus `is:crash` and `is:stacktrace`.
+  - `-tag:` excludes. `=:` matches exactly, and `~:` uses a regex.
+  - `|`, `&`, parentheses and quoted values work too.
+  - `package:mine` matches the third-party apps installed on the device.
+  - Click **?** in the app for the full reference.
+- **Suggestions** (`Ctrl+Space`) for keys, running packages, seen tags and levels.
+- **Favorites and history** for filters you use often.
+- **Hide noisy lines:** right-click a line to exclude its tag, its package, or every line with the same message. Lines that differ only in numbers count as the same message.
+
+### Find
+![Finding text in messages](docs/images/find.png)
+
+- `Ctrl+F` searches messages without hiding any lines. Matches are highlighted, and the bar shows a count such as *3 of 14*.
+- `Enter` / `Shift+Enter` (or `F3` / `Shift+F3`) step through the matches, wrapping around at the ends.
+- `Cc` matches case and `.*` searches with a regular expression.
+
+### Device mirroring
+- The phone button on the left toolbar opens the device screen next to the log, like Android Studio's *Running Devices*.
+- It uses the bundled [scrcpy](https://github.com/Genymobile/scrcpy) server; you don't need to install scrcpy.
+- **Mouse:** click or drag to tap or swipe. The wheel scrolls, right-click is Back, and middle-click is Home.
+- **Keyboard:** click the screen, then type. IME input (for example Chinese) works, and `Ctrl+V` pastes your PC's clipboard on the device.
+- **Buttons** for Power, Volume, Rotate, Notifications, Back, Home and Overview.
+- The panel follows the active tab's device, and reconnects when the device comes back.
+
+### Screenshots and screen recordings
+- **Screenshot:** a preview opens where you can edit the image, then copy it to the clipboard or save it as PNG.
+  - Rotate and crop.
+  - Draw a pen, arrow, rectangle or text.
+  - **Pixelate** areas to hide sensitive data.
+- **Screen recording:** records the device screen to MP4 (video only, up to 30 minutes).
+  - The preview lets you trim the clip frame-accurately, without re-encoding.
+  - Copy the file to the clipboard (paste it into Slack, Teams or Explorer), or save it.
+- **Auto-save:** turn it on in **Whisker menu → Capture**, and captures skip the preview and go straight to a folder (default `Pictures\Whisker`). This is handy for taking screenshots back to back.
+
+### Everything else
+- **Menu:** click the Whisker name or logo at the top left (or press `Alt`) for the File, Capture and View menus.
+- **Import and export:** open a saved log file in a new tab (`Ctrl+O`), or export the filtered lines (`Ctrl+S`).
+- **Selecting lines:** click, Shift-click and Ctrl-click to select lines, then `Ctrl+C` to copy.
+- **Display:** soft-wrap, a compact view, and column toggles.
+- **Settings:** remembered between launches; **Whisker menu → File → Reset All Settings…** restores the defaults.
+- **Theme:** follows your Windows light or dark theme.
+
+## Getting started
+
+### Requirements
+- **Windows 10 or 11** (64-bit).
+- **adb**, from Google's [SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools). If you have Android Studio, you already have it. Whisker looks for adb in this order:
+  1. the `ADB` environment variable (the full path to `adb.exe`);
+  2. `ANDROID_HOME` or `ANDROID_SDK_ROOT`;
+  3. the default SDK folder, `%LOCALAPPDATA%\Android\Sdk`;
+  4. your `PATH`.
+- **An Android device with USB debugging on.** Turn on *Developer options* (tap *Build number* seven times), then *USB debugging*. Mirroring and recording need Android 5.0 or later.
+
+### Install
+Download the latest version from the [Releases page](https://github.com/<owner>/whisker/releases/latest):
+
+| File | Use it if… |
+| --- | --- |
+| `Whisker Setup x.y.z.exe` | You want Whisker installed, with a Start menu entry. No admin rights are needed. **Recommended.** |
+| `Whisker x.y.z.exe` | You want a portable app that runs without installing. |
+
+> **"Windows protected your PC"?** Whisker isn't code-signed yet, so SmartScreen may warn you the first time. Click **More info → Run anyway**.
+
+### First run
+1. Connect your device with a USB cable, and accept the **Allow USB debugging?** prompt on the device.
+2. Start Whisker. The device is picked automatically, and logs start streaming.
+3. Pick your app in the **package/process** dropdown, or type a filter such as `package:com.example.app level:warn`.
+
+## Keyboard shortcuts
 
 | Key | Action |
 | --- | --- |
-| `Ctrl+F` | Focus filter |
+| `Ctrl+F` | Find in messages |
+| `Enter` / `Shift+Enter`, `F3` / `Shift+F3` | Next / previous match |
+| `Ctrl+L` | Focus the filter |
 | `Ctrl+Space` | Filter suggestions |
 | `Ctrl+T` | New tab |
-| `Ctrl+O` / `Ctrl+S` | Import / export log |
+| `Ctrl+O` / `Ctrl+S` | Import / export a log |
 | `Space` | Pause / resume |
-| `End` / `Home` | Jump to newest / oldest |
-| `Ctrl+A`, `Ctrl+C` | Select all shown lines, copy selection |
-| `Esc` | Clear selection / close popup |
+| `End` / `Home` | Jump to the newest / oldest line |
+| `Ctrl+A`, `Ctrl+C` | Select all shown lines, copy the selection |
+| `Alt` | Open the menu |
+| `Esc` | Clear the selection, or close a popup or the find bar |
+
+## Troubleshooting
+
+<details>
+<summary><b>No devices are listed</b></summary>
+
+- Check that `adb devices` lists the device in a terminal.
+- If it shows **unauthorized**, unlock the device and accept the USB debugging prompt.
+- If adb isn't found, set the `ADB` environment variable to the full path of `adb.exe`, then restart Whisker.
+- Try another cable or USB port. Some cables only charge.
+</details>
+
+<details>
+<summary><b>Mirroring or recording doesn't start</b></summary>
+
+- The device must be unlocked the first time, and running Android 5.0 or later.
+- Some devices (for example, some Xiaomi models) also need *USB debugging (Security settings)* turned on for input to work.
+- Click **Restart** on the mirror panel. The error message comes straight from scrcpy and usually says what's wrong.
+</details>
+
+<details>
+<summary><b>My app's logs are missing</b></summary>
+
+- Check the package/process dropdown and the filter. The **×** on each clears it.
+- Some devices limit the log buffer. Try **Formatting options → Log Buffer → all**.
+</details>
+
+## Privacy
+
+Whisker runs entirely on your computer. It talks only to adb and your device, and it doesn't collect or send any data. Settings are stored in `%APPDATA%\Whisker`.
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for building from source and how the code is organized.
+
+## Acknowledgements
+
+- Mirroring and recording use the [scrcpy](https://github.com/Genymobile/scrcpy) server by Genymobile, bundled under the Apache License 2.0 ([`vendor/scrcpy`](vendor/scrcpy)).
+- The log view is modeled on the Logcat panel of [Android Studio](https://developer.android.com/studio).
+
+Whisker isn't affiliated with or endorsed by Google. Android is a trademark of Google LLC.
+
+## License
+
+[MIT](LICENSE) © 2026 Wing Chu
