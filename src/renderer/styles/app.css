@@ -1,0 +1,15 @@
+/* The few app-wide rules that are clearer as CSS than as utilities. */
+
+/* The title bar drags the window, except for the controls in it. */
+.app-header { padding: 0 8px 0 12px; -webkit-app-region: drag; }
+.app-header > :not(.drag-fill) { -webkit-app-region: no-drag; }
+body.win .app-header, body.linux .app-header { padding-right: 150px; } /* room for the window buttons */
+body.darwin .app-header { padding-left: 80px; }                        /* room for the traffic lights */
+body.darwin .app-brand { pointer-events: none; } /* macOS shows the app menu at the top of the screen */
+
+/* The record icon is a ring; it fills in while recording. */
+.record-btn .dot { fill: none; }
+.record-btn.recording .dot { fill: currentColor; }
+
+/* input.ts marks the mirror stage while its hidden text field has the keyboard. */
+.mirror-stage.focused canvas { box-shadow: 0 0 0 2px var(--accent); }

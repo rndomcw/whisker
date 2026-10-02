@@ -1,4 +1,6 @@
-/* Colors follow the IntelliJ "New UI" Dark / Light themes used by Android Studio. */
+/* Colors follow the IntelliJ "New UI" Dark / Light themes used by Android Studio. The variables below
+   switch with the system theme; Tailwind's theme (at the end) points at them, so utilities like
+   bg-panel or text-dim follow the theme too. */
 :root {
   --row-h: 20px; /* keep in sync with ROW_H in constants.ts */
   --w-time: 24ch;
@@ -7,6 +9,8 @@
   --w-pkg: 32ch;
   --w-lvl: 3ch;
   --cpl: 100;
+  --sans: "Inter", system-ui, "Segoe UI", -apple-system, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "SF Mono", monospace;
 
   --bg: #1E1F22;
   --panel: #2B2D30;
@@ -78,4 +82,42 @@
     --t6: #A0661B; --t7: #3949AB; --t8: #7B3FC4; --t9: #00796B; --t10: #9C7400; --t11: #C2501F;
     color-scheme: light;
   }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-border: var(--border);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-dim: var(--dim);
+  --color-icon: var(--icon);
+  --color-hover: var(--hover);
+  --color-press: var(--press);
+  --color-accent: var(--accent);
+  --color-tab-active: var(--tab-active);
+  --color-tab-active-border: var(--tab-active-border);
+  --color-sel: var(--sel);
+  --color-input: var(--input);
+  --color-input-border: var(--input-border);
+  --color-mark: var(--mark);
+  --color-mark-cur: var(--mark-cur);
+  --color-menu: var(--menu);
+  --color-menu-border: var(--menu-border);
+  --color-notice: var(--notice);
+  --color-notice-fg: var(--notice-fg);
+  --color-error: var(--E);
+  --color-error-bg: var(--E-bg);
+  --color-debug: var(--D);
+  --color-rec: #FF453A;
+  --color-star: #F2C55C;
+
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
+  /* Short code snippets: the query help and the Cc / .* toggles. */
+  --font-code: "JetBrains Mono", Consolas, monospace;
+
+  --animate-blink: blink 1.2s infinite;
+  @keyframes blink { 50% { opacity: .3; } }
 }

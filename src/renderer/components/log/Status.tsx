@@ -7,6 +7,10 @@ import { state } from '../../state/app';
 import { deviceOnline, devices, procsChanged, refreshDevices } from '../../state/devices';
 import { toast } from '../../state/toast';
 import { firstIndexAtLeast } from '../../util/search';
+import { textButton } from '../ui';
+
+/** Covers the log area, centered; clicks pass through to the log. */
+const overlay = 'pointer-events-none absolute inset-0 flex items-center justify-center p-5 text-center text-dim';
 
 export function Notice() {
   const text = () => {
@@ -23,7 +27,11 @@ export function Notice() {
     }
     return '';
   };
-  return <div class="notice" hidden={!text()}>{text()}</div>;
+  return (
+    <div class="flex-none overflow-hidden text-ellipsis whitespace-nowrap border-b border-line bg-notice px-3 py-1 text-notice-fg" hidden={!text()}>
+      {text()}
+    </div>
+  );
 }
 
 async function locateAdb(): Promise<void> {
@@ -41,15 +49,15 @@ async function locateAdb(): Promise<void> {
 function AdbMissing() {
   const exe = api.platform === 'win32' ? 'adb.exe' : 'adb';
   return (
-    <div class="empty">
-      <div class="adb-missing">
-        <div class="adb-missing-title">adb not found</div>
-        <p>Whisker uses adb, from Google's Android SDK Platform-Tools, to read logs and mirror the device screen.</p>
-        <div class="adb-missing-actions">
-          <button class="dlg-btn primary" onClick={() => api.openAdbDownload()}>Download Platform-Tools</button>
-          <button class="dlg-btn" onClick={() => void locateAdb()}>Locate {exe}…</button>
+    <div class={overlay}>
+      <div class="pointer-events-auto max-w-[460px] select-text rounded-lg border border-line bg-panel px-6 py-5 text-fg-2">
+        <div class="text-[15px] font-semibold text-fg">adb not found</div>
+        <p class="my-2.5 leading-normal">Whisker uses adb, from Google's Android SDK Platform-Tools, to read logs and mirror the device screen.</p>
+        <div class="mt-4 mb-1.5 flex justify-center gap-2">
+          <button class={textButton(true)} onClick={() => api.openAdbDownload()}>Download Platform-Tools</button>
+          <button class={textButton()} onClick={() => void locateAdb()}>Locate {exe}…</button>
         </div>
-        <p class="adb-missing-hint">
+        <p class="my-2.5 text-[12px] leading-normal text-dim">
           Already installed? Locate {exe} in the platform-tools folder. Whisker also finds it in the Android Studio SDK
           and on your PATH, and checks again every few seconds.
         </p>
@@ -76,7 +84,7 @@ export function EmptyState() {
   };
   return (
     <Show when={!devices.adbMissing || state.active.file} fallback={<AdbMissing />}>
-      <div class="empty" hidden={!text()}>{text()}</div>
+      <div class={overlay} hidden={!text()}>{text()}</div>
     </Show>
   );
 }

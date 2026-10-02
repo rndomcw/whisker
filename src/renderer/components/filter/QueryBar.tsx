@@ -12,6 +12,7 @@ import {
 import { settings } from '../../state/settings';
 import { quoteIfNeeded } from '../../util/text';
 import { Icon } from '../Icon';
+import { cx, IconButton, menuBox, menuHint, menuItem, menuLabel, queryField, queryInput, TextToggle } from '../ui';
 
 const KEY_HINTS: [string, string][] = [
   ['tag', 'Log tag'], ['package', 'App package'], ['process', 'Process name'], ['message', 'Log message'],
@@ -41,11 +42,11 @@ interface Suggest {
 }
 
 /** The query box element, for Ctrl+L. */
-let queryInput: HTMLInputElement | undefined;
+let queryEl: HTMLInputElement | undefined;
 
 export function focusQuery(): void {
-  queryInput?.focus();
-  queryInput?.select();
+  queryEl?.focus();
+  queryEl?.select();
 }
 
 function valuesFor(key: string): string[] {
@@ -83,14 +84,16 @@ function QueryHelp() {
     [['"quoted text"'], 'Values with spaces or special characters'],
   ];
   return (
-    <div class="help">
-      <div class="help-title">Logcat query syntax</div>
-      <table>
+    <div class="select-text px-2.5 py-2">
+      <div class="mb-2 font-semibold">Logcat query syntax</div>
+      <table class="border-collapse">
         <For each={rows}>
           {([codes, text]) => (
             <tr>
-              <td><For each={codes}>{(c, i) => <>{i() ? ' ' : ''}<code>{c}</code></>}</For></td>
-              <td>{text}</td>
+              <td class="py-[3px] pr-[14px] align-top">
+                <For each={codes}>{(c, i) => <>{i() ? ' ' : ''}<code class="font-code text-debug">{c}</code></>}</For>
+              </td>
+              <td class="py-[3px] pr-[14px] align-top">{text}</td>
             </tr>
           )}
         </For>
@@ -205,13 +208,12 @@ export function QueryBar() {
 
   return (
     <>
-      <div class="query-box" classList={{ invalid: !!state.active.filter.error }} title={state.active.filter.error}>
-        <button class="icon-btn small" title="Filter history and favorites"
-          onClick={ev => toggleMenuBelow(ev.currentTarget, filterMenuItems)}>
-          <Icon name="funnel" />
-        </button>
+      <div class={cx(queryField(!!state.active.filter.error), 'min-w-[200px] flex-1 pl-[3px]')} title={state.active.filter.error}>
+        <IconButton small icon="funnel" title="Filter history and favorites" onClick={ev => toggleMenuBelow(ev.currentTarget, filterMenuItems)} />
         <input
-          ref={el => { input = el; queryInput = el; }}
+          id="query"
+          class={queryInput}
+          ref={el => { input = el; queryEl = el; }}
           spellcheck={false}
           autocomplete="off"
           placeholder="Press Ctrl+Space to see suggestions"
@@ -222,33 +224,29 @@ export function QueryBar() {
           onBlur={() => { commitHistory(); setTimeout(() => setSuggest(null), 150); }}
         />
         <Show when={queryText()}>
-          <button class="icon-btn small" title="Clear filter" onClick={() => { setQuery(''); input.focus(); }}><Icon name="close" /></button>
+          <IconButton small icon="close" title="Clear filter" onClick={() => { setQuery(''); input.focus(); }} />
         </Show>
-        <button class="text-toggle" classList={{ on: state.active.caseSens }} title="Match case" onClick={toggleCase}>Cc</button>
-        <button id="favBtn" class="icon-btn small" classList={{ on: fav() }}
-          title={fav() ? 'Remove filter from favorites' : 'Add filter to favorites'} onClick={toggleFavorite}>
-          <Icon name="star" />
-        </button>
+        <TextToggle on={state.active.caseSens} title="Match case" onClick={toggleCase}>Cc</TextToggle>
+        <IconButton small icon="star" on={fav()} class={fav() ? '[&_svg]:fill-star [&_svg]:stroke-star' : ''}
+          title={fav() ? 'Remove filter from favorites' : 'Add filter to favorites'} onClick={toggleFavorite} />
       </div>
-      <button class="icon-btn" title="Query syntax" onClick={ev => {
+      <IconButton icon="help" title="Query syntax" onClick={ev => {
         const r = ev.currentTarget.getBoundingClientRect();
-        showMenu(r.right - 620, r.bottom + 4, [{ content: () => <QueryHelp /> }], 'help-menu');
-      }}>
-        <Icon name="help" />
-      </button>
+        showMenu(r.right - 620, r.bottom + 4, [{ content: () => <QueryHelp /> }], 'help');
+      }} />
       <Show when={suggest()}>
         {s => (
-          <div class="menu suggest" ref={suggestEl} style={{ left: `${s().x}px`, top: `${s().y}px` }}
+          <div class={menuBox('suggest')} ref={suggestEl} style={{ left: `${s().x}px`, top: `${s().y}px` }}
             onMouseDown={ev => {
               ev.preventDefault(); // keep focus in the query box
-              const item = (ev.target as Element).closest<HTMLElement>('.item');
+              const item = (ev.target as Element).closest<HTMLElement>('[data-i]');
               if (item) acceptSuggest(Number(item.dataset.i));
             }}>
             <For each={s().items}>
               {(it, i) => (
-                <div class="item" classList={{ active: i() === s().index }} data-i={i()}>
-                  <span class="label">{it.label}</span>
-                  <Show when={it.hint}><span class="hint">{it.hint}</span></Show>
+                <div class={menuItem({ active: i() === s().index, indent: 'wide' })} data-i={i()}>
+                  <span class={menuLabel}>{it.label}</span>
+                  <Show when={it.hint}><span class={menuHint(i() === s().index)}>{it.hint}</span></Show>
                 </div>
               )}
             </For>

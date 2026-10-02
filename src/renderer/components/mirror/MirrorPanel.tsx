@@ -10,7 +10,7 @@ import { bindInput, press } from '../../mirror/input';
 import { state } from '../../state/app';
 import { deviceName, deviceOnline } from '../../state/devices';
 import { saveSettings, settings } from '../../state/settings';
-import { Icon } from '../Icon';
+import { cx, IconButton, Separator } from '../ui';
 
 const STREAM_OPTIONS = { maxSize: 1280, bitRate: 8000000, maxFps: 60 };
 /** Automatic (re)starts stop after this many consecutive failures; Retry resets it. */
@@ -209,36 +209,55 @@ export function MirrorPanel() {
   });
 
   const Btn = (props: { act: string; icon: string; title: string }) => (
-    <button class="icon-btn small" title={props.title} onClick={() => act(props.act)}><Icon name={props.icon} /></button>
+    <IconButton small icon={props.icon} title={props.title} onClick={() => act(props.act)} />
   );
 
   return (
     <>
-      <div class="splitter" ref={split} onPointerDown={onSplitterDown} />
-      <aside class="mirror" ref={panel}>
-        <div class="mirror-bar">
-          <span class="mirror-title" title={target().serial}>{target().label || deviceLabel() || 'No device'}</span>
-          <span class="spacer" />
+      <div
+        ref={split}
+        class="w-[5px] flex-none cursor-col-resize border-x-2 border-bg bg-line hover:bg-accent [&.dragging]:bg-accent"
+        onPointerDown={onSplitterDown}
+      />
+      <aside ref={panel} id="mirror" class="flex w-[var(--mirror-w,380px)] min-w-[220px] flex-none flex-col bg-panel">
+        <div class="flex h-[34px] items-center gap-px whitespace-nowrap border-b border-line pr-1.5 pl-2.5">
+          <span class="min-w-0 overflow-hidden text-ellipsis font-semibold" title={target().serial}>
+            {target().label || deviceLabel() || 'No device'}
+          </span>
+          <span class="flex-1" />
           <Btn act="power" icon="power" title="Power" />
           <Btn act="volup" icon="volup" title="Volume Up" />
           <Btn act="voldown" icon="voldown" title="Volume Down" />
           <Btn act="rotate" icon="rotate" title="Rotate" />
           <Btn act="notifications" icon="bell" title="Notifications" />
-          <span class="tool-sep vertical" />
+          <Separator vertical />
           <Btn act="back" icon="back" title="Back (right-click on screen)" />
           <Btn act="home" icon="home" title="Home (middle-click on screen)" />
           <Btn act="recents" icon="recents" title="Overview" />
-          <span class="tool-sep vertical" />
+          <Separator vertical />
           <Btn act="restart" icon="restart" title="Restart mirroring" />
-          <button class="icon-btn small" title="Close" onClick={() => setMirrorOpen(false)}><Icon name="close" /></button>
+          <IconButton small icon="close" title="Close" onClick={() => setMirrorOpen(false)} />
         </div>
-        <div class="mirror-stage" ref={stage}>
-          <canvas id="mirrorCanvas" ref={canvas} hidden={!showing()} />
-          <div class="mirror-status" classList={{ error: status().error }} hidden={!status().text}>
+        {/* "mirror-stage" is styled while it has the keyboard; see styles/app.css. */}
+        <div ref={stage} class="mirror-stage relative flex min-h-0 flex-1 items-center justify-center p-3 outline-none">
+          <canvas id="mirrorCanvas" ref={canvas} hidden={!showing()} class="block cursor-default touch-none rounded-[10px] bg-black" />
+          <div
+            class={cx('pointer-events-none absolute inset-x-4 text-center', status().error ? 'text-error' : 'text-dim')}
+            hidden={!status().text}
+          >
             {status().text}
-            <Show when={status().retry}><br /><button onClick={retry}>Retry</button></Show>
+            <Show when={status().retry}>
+              <br />
+              <button class="pointer-events-auto mt-2 rounded bg-press px-3 py-[3px] text-fg" onClick={retry}>Retry</button>
+            </Show>
           </div>
-          <textarea class="mirror-input" ref={input} aria-label="Keyboard input for the device" spellcheck={false} autocomplete="off" />
+          <textarea
+            ref={input}
+            class="absolute bottom-0 left-0 size-px resize-none border-0 p-0 opacity-0"
+            aria-label="Keyboard input for the device"
+            spellcheck={false}
+            autocomplete="off"
+          />
         </div>
       </aside>
     </>

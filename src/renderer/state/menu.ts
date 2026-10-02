@@ -2,6 +2,7 @@
 // One menu is open at a time.
 
 import { createSignal, type JSX } from 'solid-js';
+import type { MenuKind } from '../components/ui';
 
 export type MenuItem =
   | '-'
@@ -23,7 +24,7 @@ export interface OpenMenu {
   x: number;
   y: number;
   items: MenuItem[];
-  cls: string;
+  kind: MenuKind;
   /** The button the menu drops down from; it gets `.open`, and clicking it again closes the menu. */
   anchor: HTMLElement | null;
 }
@@ -41,13 +42,13 @@ export function isMenuOpen(anchor?: HTMLElement): boolean {
   return !!m && (!anchor || m.anchor === anchor);
 }
 
-export function showMenu(x: number, y: number, items: MenuItem[], cls = ''): void {
-  setMenu({ x, y, items, cls, anchor: null });
+export function showMenu(x: number, y: number, items: MenuItem[], kind: MenuKind = 'default'): void {
+  setMenu({ x, y, items, kind, anchor: null });
 }
 
 /** Opens a dropdown under `anchor`, or closes it if it is already open there. */
-export function toggleMenuBelow(anchor: HTMLElement, items: () => MenuItem[], cls = ''): void {
+export function toggleMenuBelow(anchor: HTMLElement, items: () => MenuItem[], kind: MenuKind = 'default'): void {
   if (isMenuOpen(anchor)) { closeMenu(); return; }
   const r = anchor.getBoundingClientRect();
-  setMenu({ x: r.left, y: r.bottom + 4, items: items(), cls, anchor });
+  setMenu({ x: r.left, y: r.bottom + 4, items: items(), kind, anchor });
 }

@@ -3,6 +3,7 @@
 import { createEffect, For, Match, onCleanup, onMount, Show, Switch } from 'solid-js';
 import { closeMenu, type MenuItem, openMenu } from '../state/menu';
 import { Icon } from './Icon';
+import { cx, type MenuKind, menuBox, menuHeader, menuHint, menuItem, menuLabel, menuSeparator } from './ui';
 
 type ActionItem = Extract<MenuItem, { label: string }>;
 
@@ -10,7 +11,7 @@ function MenuItems(props: { items: MenuItem[] }) {
   const checks = () => props.items.some(it => typeof it === 'object' && 'label' in it && it.checked !== undefined);
   const run = (it: ActionItem, ev: MouseEvent) => {
     if (it.disabled) return;
-    if (it.remove && (ev.target as Element).closest('.remove')) { closeMenu(); it.remove(); return; }
+    if (it.remove && (ev.target as Element).closest('[data-remove]')) { closeMenu(); it.remove(); return; }
     closeMenu();
     it.action?.();
   };
@@ -18,18 +19,20 @@ function MenuItems(props: { items: MenuItem[] }) {
     <For each={props.items}>
       {it => (
         <Switch>
-          <Match when={it === '-'}><div class="sep" /></Match>
-          <Match when={typeof it === 'object' && 'header' in it && it}>{h => <div class="menu-header">{h().header}</div>}</Match>
+          <Match when={it === '-'}><div class={menuSeparator} /></Match>
+          <Match when={typeof it === 'object' && 'header' in it && it}>{h => <div class={menuHeader}>{h().header}</div>}</Match>
           <Match when={typeof it === 'object' && 'content' in it && it}>{c => c().content()}</Match>
           <Match when={typeof it === 'object' && 'label' in it && it}>
             {item => (
-              <div class="item" classList={{ disabled: item().disabled }} onClick={ev => run(item(), ev)}>
+              <div class={menuItem({ disabled: item().disabled })} onClick={ev => run(item(), ev)}>
                 <Show when={checks()}>
-                  <span class="check"><Show when={item().checked}><Icon name="check" /></Show></span>
+                  <span class="inline-flex w-4"><Show when={item().checked}><Icon name="check" /></Show></span>
                 </Show>
-                <span class="label">{item().label}</span>
-                <Show when={item().hint}><span class="hint">{item().hint}</span></Show>
-                <Show when={item().remove}><span class="remove" title="Remove"><Icon name="close" /></span></Show>
+                <span class={menuLabel}>{item().label}</span>
+                <Show when={item().hint}><span class={menuHint()}>{item().hint}</span></Show>
+                <Show when={item().remove}>
+                  <span data-remove class="ml-2 inline-flex opacity-60 hover:opacity-100" title="Remove"><Icon name="close" /></span>
+                </Show>
               </div>
             )}
           </Match>
@@ -39,7 +42,7 @@ function MenuItems(props: { items: MenuItem[] }) {
   );
 }
 
-function PopupMenu(props: { x: number; y: number; cls: string; items: MenuItem[] }) {
+function PopupMenu(props: { x: number; y: number; kind: MenuKind; items: MenuItem[] }) {
   let el!: HTMLDivElement;
   onMount(() => {
     const r = el.getBoundingClientRect();
@@ -47,7 +50,7 @@ function PopupMenu(props: { x: number; y: number; cls: string; items: MenuItem[]
     el.style.top = (props.y + r.height > innerHeight - 4 ? Math.max(4, props.y - r.height) : props.y) + 'px';
   });
   return (
-    <div ref={el} class={`menu ${props.cls}`} style={{ left: `${props.x}px`, top: `${props.y}px` }}>
+    <div ref={el} data-menu class={cx(menuBox(props.kind))} style={{ left: `${props.x}px`, top: `${props.y}px` }}>
       <MenuItems items={props.items} />
     </div>
   );
@@ -68,7 +71,7 @@ export function MenuHost() {
       if (!m) return;
       const target = ev.target as Element;
       // Clicks on the anchor are left to its own handler, which toggles the menu.
-      if (!target.closest('.menu') && !m.anchor?.contains(target)) closeMenu();
+      if (!target.closest('[data-menu]') && !m.anchor?.contains(target)) closeMenu();
     };
     document.addEventListener('mousedown', onDown, true);
     window.addEventListener('blur', closeMenu);
@@ -78,5 +81,5 @@ export function MenuHost() {
     });
   });
 
-  return <Show when={openMenu()} keyed>{m => <PopupMenu x={m.x} y={m.y} cls={m.cls} items={m.items} />}</Show>;
+  return <Show when={openMenu()} keyed>{m => <PopupMenu x={m.x} y={m.y} kind={m.kind} items={m.items} />}</Show>;
 }

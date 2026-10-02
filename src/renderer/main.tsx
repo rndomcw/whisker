@@ -1,6 +1,5 @@
 // Renderer entry point: restores the tabs, renders the UI and starts polling devices.
 
-import './styles/index.css';
 import { render } from 'solid-js/web';
 import { api } from './api';
 import { App } from './components/App';

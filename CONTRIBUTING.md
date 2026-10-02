@@ -27,7 +27,18 @@ If `npm start` reports that Electron failed to install, run `node node_modules/e
 | `npm run dist` | Type-checks, bundles, and writes the installer and the portable `.exe` to `dist/` |
 | `npm run icon` | Regenerates `build/icon.png` and `build/icon.ico` from `build/icon.svg` |
 
-Whisker is written in strict TypeScript; the UI uses [SolidJS](https://www.solidjs.com/). esbuild bundles it (with `esbuild-plugin-solid` for the JSX), and `tsc` only checks types.
+Whisker is written in strict TypeScript; the UI uses [SolidJS](https://www.solidjs.com/) and [Tailwind CSS](https://tailwindcss.com/) v4. esbuild bundles the code (with `esbuild-plugin-solid` for the JSX), the Tailwind CLI builds the CSS, and `tsc` only checks types.
+
+## Styling
+
+- **Components use Tailwind utilities.** The theme colors are named after the CSS variables in `styles/theme.css` (`bg-panel`, `text-dim`, `border-line`, `bg-accent`, …), and they follow the light/dark system theme.
+- **Shared controls live in `components/ui.tsx`**: `IconButton`, `Separator`, `TextToggle`, and the class lists for menus, pickers and text buttons. Use them instead of copying class lists.
+- **Pick one value per property.** For a state, choose between two class lists (`on ? 'bg-press text-fg' : 'text-icon hover:bg-hover'`) instead of adding an override. When two utilities set the same property on one element, the order in the stylesheet decides, not the order in `class`.
+- **Write class names in full.** Tailwind finds classes by scanning the source, so a class name assembled from parts (such as `'text-' + color`) isn't generated.
+- **Some styles stay CSS** (`styles/`), because they're clearer that way:
+  - `log.css`: the log rows. A row's level class colors its message and badge, and a class on `#log` hides columns or turns on wrapping for every row at once.
+  - `app.css`: the title bar's window-drag area, and states set from code (the record icon, the focused mirror screen).
+  - `base.css`: element defaults. Tailwind's preflight reset isn't used.
 
 ## Naming
 
@@ -68,7 +79,7 @@ src/
     log/             Log entry model and package/process selections
     view/layout.ts   Row geometry for the virtualized view (fixed or soft-wrapped rows)
     mirror/          scrcpy control messages, WebCodecs decoder, input mapping
-    styles/          CSS, split by area
+    styles/          Tailwind entry (index.css), theme colors, element defaults, log rows, app-wide rules
 scripts/           build.mjs (esbuild) and make-icon.js
 vendor/scrcpy/     Bundled scrcpy-server v4.0 and its Apache-2.0 license
 build/             App icon

@@ -1,4 +1,5 @@
-/* Page defaults, icons and buttons. */
+/* Element defaults (in the base layer, so utilities override them). Tailwind's preflight reset isn't
+   used; these are the only resets. */
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -12,18 +13,18 @@ html, body {
   height: 100%;
   background: var(--bg);
   color: var(--fg);
-  font: 13px "Inter", system-ui, "Segoe UI", -apple-system, sans-serif;
 }
 
+/* The font size is set on body, not html, so 1rem stays 16px for Tailwind's spacing scale. */
 body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   user-select: none;
+  font: 13px var(--sans);
 }
 
 .sprite { display: none; }
-.spacer { flex: 1; }
 
 svg {
   width: 16px;
@@ -35,6 +36,8 @@ svg {
   stroke-linejoin: round;
   flex: none;
 }
+/* Parts of sprite icons: filled dots and the settings icon's knobs. */
+svg .dot { fill: currentColor; stroke: none; }
 svg .knob { fill: var(--panel); }
 
 button {
@@ -46,21 +49,4 @@ button {
   cursor: pointer;
 }
 
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 5px;
-  color: var(--icon);
-  flex: none;
-}
-.icon-btn:hover { background: var(--hover); }
-.icon-btn:active { background: var(--press); }
-.icon-btn.on { background: var(--press); color: var(--fg); }
-.icon-btn.small { width: 22px; height: 22px; border-radius: 4px; }
-.icon-btn[disabled] { opacity: .4; pointer-events: none; }
-
-.tool-sep { width: 20px; height: 1px; background: var(--line); margin: 3px 0; }
-.tool-sep.vertical { width: 1px; height: 16px; margin: 0 4px; }
+mark { background: var(--mark); color: inherit; border-radius: 2px; }

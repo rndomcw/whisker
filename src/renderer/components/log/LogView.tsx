@@ -224,7 +224,13 @@ export function LogView() {
         </div>
       </main>
       <Show when={!tab().follow && frame().n > 0}>
-        <button class="follow-btn" title="Scroll to End (End)" onClick={scrollToEnd}><Icon name="end" /></button>
+        <button
+          class="absolute right-[22px] bottom-[18px] flex size-8 items-center justify-center rounded-full bg-accent text-white shadow-[0_2px_10px_rgba(0,0,0,.35)]"
+          title="Scroll to End (End)"
+          onClick={scrollToEnd}
+        >
+          <Icon name="end" />
+        </button>
       </Show>
     </>
   );

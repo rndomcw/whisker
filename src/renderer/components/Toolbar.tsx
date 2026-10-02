@@ -14,7 +14,7 @@ import { toast } from '../state/toast';
 import { fileTimestamp } from '../util/text';
 import { invalidateLayout } from '../view/layout';
 import { openScreenshotDialog } from './capture/ScreenshotDialog';
-import { Icon } from './Icon';
+import { cx, IconButton, Separator } from './ui';
 import { jumpToError, scrollToEnd, scrollToStart } from './log/actions';
 import { setMirrorOpen } from './mirror/MirrorPanel';
 
@@ -119,38 +119,29 @@ export function Toolbar() {
   const autoHint = () => (isAutoSave() ? `\nAuto-save to ${captureFolder()} (right-click for options)` : '\nRight-click for auto-save options');
 
   return (
-    <nav class="side-toolbar">
-      <button class="icon-btn" title="Clear Logcat" onClick={() => void clearLog()}><Icon name="trash" /></button>
-      <button class="icon-btn" classList={{ on: t().paused }} title={t().paused ? 'Resume Logcat (Space)' : 'Pause Logcat (Space)'}
-        onClick={() => t().setPaused(!t().paused)}>
-        <Icon name={t().paused ? 'play' : 'pause'} />
-      </button>
-      <button class="icon-btn" title="Restart Logcat" disabled={!live()} onClick={() => t().restart()}><Icon name="restart" /></button>
-      <button class="icon-btn" title="Scroll to End (End)" onClick={scrollToEnd}><Icon name="end" /></button>
-      <button class="icon-btn" title="Previous Error" onClick={() => jumpToError(-1)}><Icon name="up" /></button>
-      <button class="icon-btn" title="Next Error" onClick={() => jumpToError(1)}><Icon name="down" /></button>
-      <span class="tool-sep" />
-      <button class="icon-btn" classList={{ on: settings.wrap }} title="Soft-Wrap" onClick={toggleWrap}><Icon name="wrap" /></button>
-      <button class="icon-btn" title="Import Logcat from File (Ctrl+O)" onClick={() => void importLog()}><Icon name="import" /></button>
-      <button class="icon-btn" title="Export Logcat to File (Ctrl+S)" onClick={() => void exportLog()}><Icon name="export" /></button>
-      <button class="icon-btn" title="Configure Logcat Formatting Options"
-        onClick={ev => toggleMenuBelow(ev.currentTarget, formatMenuItems)}>
-        <Icon name="settings" />
-      </button>
-      <span class="tool-sep" />
-      <button class="icon-btn" id="btnShot" title={'Take Screenshot' + autoHint()} disabled={!online()}
-        onClick={takeScreenshot} onContextMenu={showCaptureMenu}>
-        <Icon name="camera" />
-      </button>
+    <nav class="flex w-10 flex-none flex-col items-center gap-1 border-r border-line bg-bg py-1.5">
+      <IconButton icon="trash" title="Clear Logcat" onClick={() => void clearLog()} />
+      <IconButton icon={t().paused ? 'play' : 'pause'} on={t().paused} title={t().paused ? 'Resume Logcat (Space)' : 'Pause Logcat (Space)'}
+        onClick={() => t().setPaused(!t().paused)} />
+      <IconButton icon="restart" title="Restart Logcat" disabled={!live()} onClick={() => t().restart()} />
+      <IconButton icon="end" title="Scroll to End (End)" onClick={scrollToEnd} />
+      <IconButton icon="up" title="Previous Error" onClick={() => jumpToError(-1)} />
+      <IconButton icon="down" title="Next Error" onClick={() => jumpToError(1)} />
+      <Separator />
+      <IconButton icon="wrap" on={settings.wrap} title="Soft-Wrap" onClick={toggleWrap} />
+      <IconButton icon="import" title="Import Logcat from File (Ctrl+O)" onClick={() => void importLog()} />
+      <IconButton icon="export" title="Export Logcat to File (Ctrl+S)" onClick={() => void exportLog()} />
+      <IconButton icon="settings" title="Configure Logcat Formatting Options" onClick={ev => toggleMenuBelow(ev.currentTarget, formatMenuItems)} />
+      <Separator />
+      <IconButton id="btnShot" icon="camera" title={'Take Screenshot' + autoHint()} disabled={!online()}
+        onClick={takeScreenshot} onContextMenu={showCaptureMenu} />
       {/* A running recording can always be stopped, even from a tab showing another device. */}
-      <button class="icon-btn" id="btnRecord" classList={{ recording: isRecording() }}
+      <IconButton id="btnRecord" icon={isRecording() ? 'stop' : 'record'}
+        class={cx('record-btn', isRecording() && 'recording')}
+        tone={isRecording() ? 'bg-rec/18 text-rec' : undefined}
         title={(isRecording() ? 'Stop Recording' : 'Record Screen') + autoHint()}
-        disabled={!online() && !isRecording()} onClick={toggleRecording} onContextMenu={showCaptureMenu}>
-        <Icon name={isRecording() ? 'stop' : 'record'} />
-      </button>
-      <button class="icon-btn" classList={{ on: settings.mirror }} title="Device Mirroring" onClick={() => setMirrorOpen(!settings.mirror)}>
-        <Icon name="mirror" />
-      </button>
+        disabled={!online() && !isRecording()} onClick={toggleRecording} onContextMenu={showCaptureMenu} />
+      <IconButton icon="mirror" on={settings.mirror} title="Device Mirroring" onClick={() => setMirrorOpen(!settings.mirror)} />
     </nav>
   );
 }

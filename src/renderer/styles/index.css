@@ -1,8 +1,12 @@
-/* Bundled by esbuild into out/renderer/app.css. */
+/* Built by the Tailwind CLI into out/renderer/app.css (see scripts/build.mjs).
+   Tailwind's theme and utilities are used without its preflight reset; base.css has the element
+   defaults. Layers keep the order predictable: utilities override base and component CSS. */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source('../');
+
 @import './theme.css';
-@import './base.css';
-@import './header.css';
-@import './log.css';
-@import './mirror.css';
-@import './menus.css';
-@import './capture.css';
+@import './base.css' layer(base);
+@import './log.css' layer(components);
+@import './app.css' layer(components);

@@ -25,14 +25,14 @@ export function App() {
   return (
     <>
       <Header />
-      <div class="filterbar">
+      <div class="flex items-center gap-2 border-b border-border bg-panel py-1.5 pr-2 pl-2.5">
         <DeviceSelector />
         <ProcessSelector />
         <QueryBar />
       </div>
-      <div class="body">
+      <div class="flex min-h-0 flex-1">
         <Toolbar />
-        <div class="log-wrap">
+        <div class="relative flex min-w-0 flex-1 flex-col">
           <Notice />
           <FindBar />
           <RecBadge />

@@ -3,9 +3,11 @@
 import { type JSX, onCleanup, onMount, Show } from 'solid-js';
 import { closeDialog, currentDialog } from '../state/dialog';
 import { Icon } from './Icon';
+import { cx, IconButton, textButton } from './ui';
 
 export interface DialogProps {
   title: string;
+  /** Size classes for the dialog box. */
   class?: string;
   /** Row under the title. */
   toolbar?: JSX.Element;
@@ -26,40 +28,47 @@ export function Dialog(props: DialogProps) {
     onCleanup(() => document.removeEventListener('keydown', onKey, true));
   });
   return (
-    <div class="modal-backdrop">
-      <div class={`modal ${props.class ?? ''}`} role="dialog" aria-modal="true">
-        <div class="modal-head">
-          <span class="modal-title">{props.title}</span>
-          <span class="spacer" />
-          <button class="icon-btn small" title="Close (Esc)" onClick={closeDialog}><Icon name="close" /></button>
+    <div class="fixed inset-0 z-[200] flex items-center justify-center bg-black/55">
+      <div
+        role="dialog"
+        aria-modal="true"
+        class={cx(
+          'flex max-h-[calc(100vh-48px)] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[10px]',
+          'border border-menu-border bg-panel shadow-[0_12px_48px_rgba(0,0,0,.5)]',
+          props.class,
+        )}
+      >
+        <div class="flex h-10 items-center gap-1.5 pr-2 pl-4 font-semibold">
+          <span>{props.title}</span>
+          <span class="flex-1" />
+          <IconButton small icon="close" title="Close (Esc)" onClick={closeDialog} />
         </div>
-        <div class="modal-toolbar">{props.toolbar}</div>
-        <div class="modal-body">{props.children}</div>
-        <div class="modal-footer">{props.footer}</div>
+        <Show when={props.toolbar}>
+          <div class="flex items-center gap-0.5 border-y border-line px-2.5 py-1">{props.toolbar}</div>
+        </Show>
+        <div class="flex min-h-0 flex-1 flex-col bg-bg">{props.children}</div>
+        <div class="flex items-center gap-2 border-t border-line px-3 py-2.5">{props.footer}</div>
       </div>
     </div>
   );
 }
 
-/** A toolbar/footer button with an icon and an optional label. */
+/** A toolbar/footer button: an icon button, or a text button with an icon when it has a label. */
 export function DialogButton(props: {
-  icon: string; label?: string; title: string; onClick: () => void; class?: string; disabled?: boolean; on?: boolean;
+  icon: string; label?: string; title: string; onClick: () => void; primary?: boolean; disabled?: boolean; on?: boolean;
 }) {
   return (
-    <button
-      class={`${props.label ? 'dlg-btn' : 'icon-btn'} ${props.class ?? ''}`}
-      classList={{ on: props.on }}
-      title={props.title}
-      disabled={props.disabled}
-      onClick={() => props.onClick()}
+    <Show
+      when={props.label}
+      fallback={<IconButton icon={props.icon} title={props.title} on={props.on} disabled={props.disabled} onClick={() => props.onClick()} />}
     >
-      <Icon name={props.icon} />
-      <Show when={props.label}><span>{props.label}</span></Show>
-    </button>
+      <button class={textButton(props.primary)} title={props.title} disabled={props.disabled} onClick={() => props.onClick()}>
+        <Icon name={props.icon} />
+        <span>{props.label}</span>
+      </button>
+    </Show>
   );
 }
-
-export const Separator = () => <span class="tool-sep vertical" />;
 
 export function DialogHost() {
   return <Show when={currentDialog()} keyed>{render => render()}</Show>;
