@@ -21,10 +21,13 @@ function devIcon(): string | undefined {
   return fs.existsSync(file) ? file : undefined;
 }
 
-export function createWindow(): BrowserWindow {
+/** Opens a window; one opened next to an existing window is offset from it, so it doesn't hide it exactly. */
+export function createWindow(near?: BrowserWindow | null): BrowserWindow {
+  const at = near && !near.isDestroyed() && !near.isMinimized() && !near.isMaximized() ? near.getBounds() : null;
   const win = new BrowserWindow({
-    width: 1500,
-    height: 900,
+    width: at?.width ?? 1500,
+    height: at?.height ?? 900,
+    ...(at ? { x: at.x + 32, y: at.y + 32 } : {}),
     minWidth: 800,
     minHeight: 400,
     title: 'Whisker',
