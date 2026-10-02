@@ -262,7 +262,7 @@ export class ImageEditor {
     const stageRect = this.stage.getBoundingClientRect();
     const scale = rect.width / this.canvas.width;
     const input = document.createElement('input');
-    input.className = 'editor-text';
+    input.className = 'absolute z-[5] min-w-[120px] -translate-y-1/2 select-text border border-dashed border-white bg-black/25 px-0.5 font-semibold outline-none [font-family:var(--sans)]';
     input.style.left = ev.clientX - stageRect.left + 'px';
     input.style.top = ev.clientY - stageRect.top + 'px';
     input.style.fontSize = this.fontSize * scale + 'px';

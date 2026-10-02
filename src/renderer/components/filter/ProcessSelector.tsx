@@ -8,6 +8,7 @@ import { procsChanged } from '../../state/devices';
 import { closeMenu, toggleMenuBelow } from '../../state/menu';
 import type { Tab } from '../../state/Tab';
 import { Icon } from '../Icon';
+import { cx, menuHeader, menuHint, menuItem, pickerButton, pickerLabel, pickerSub } from '../ui';
 
 interface Choice extends ProcSel {
   label?: string;
@@ -109,7 +110,7 @@ function ProcMenu() {
   }));
   createEffect(() => {
     const i = active();
-    if (scrollToActive) list.querySelector(`.item[data-i="${i}"]`)?.scrollIntoView({ block: 'nearest' });
+    if (scrollToActive) list.querySelector(`[data-i="${i}"]`)?.scrollIntoView({ block: 'nearest' });
   });
 
   // Toggling keeps the menu open so several processes can be picked in one go.
@@ -141,31 +142,46 @@ function ProcMenu() {
 
   return (
     <>
-      <div class="menu-search">
+      <div class="flex items-center gap-1.5 border-b border-line px-2.5 py-1.5 text-icon">
         <Icon name="search" />
         <input ref={input} placeholder="Search packages and processes" spellcheck={false}
+          class="h-6 min-w-0 flex-1 select-text border-0 bg-transparent text-fg outline-none [font:inherit]"
           onInput={ev => setQuery(ev.currentTarget.value)} onKeyDown={onKey} />
       </div>
       {/* mousedown is prevented to keep focus in the search box */}
-      <div class="proc-list" ref={list} onMouseDown={ev => ev.preventDefault()}>
+      <div class="max-h-[calc(60vh-40px)] overflow-y-auto overflow-x-hidden p-1" ref={list} onMouseDown={ev => ev.preventDefault()}>
         <Show when={model().rows.length} fallback={
-          <div class="item disabled">
-            <span class="label">No matches{model().q ? ` — press Enter to add "${query().trim()}"` : ''}</span>
+          <div class={menuItem({ disabled: true })}>
+            <span>No matches{model().q ? ` — press Enter to add "${query().trim()}"` : ''}</span>
           </div>
         }>
           <For each={model().groups}>
             {g => (
               <>
-                <Show when={g.title}><div class="menu-header">{g.title}</div></Show>
+                <Show when={g.title}><div class={menuHeader}>{g.title}</div></Show>
                 <For each={g.rows}>
                   {({ row, index }) => {
                     const on = () => (row.proc ? isSel(row.proc) : !t.procSel.length);
+                    const isActive = () => active() === index;
                     return (
-                      <div class="item" classList={{ dead: row.choice.dead, active: active() === index }} data-i={index}
-                        onClick={() => toggle(row.proc)}>
-                        <span class="cb" classList={{ on: on(), radio: row.choice.all }}><Show when={on()}><Icon name="check" /></Show></span>
-                        <span class="label">{row.choice.label || row.choice.value}</span>
-                        <Show when={row.choice.hint}><span class="hint">{row.choice.hint}</span></Show>
+                      <div class={menuItem({ active: isActive() })} data-i={index} onClick={() => toggle(row.proc)}>
+                        {/* A checkbox, or a radio for "All processes". */}
+                        <span class={cx(
+                          'mx-0.5 inline-flex size-[14px] flex-none items-center justify-center border text-white',
+                          '[&_svg]:size-3 [&_svg]:[stroke-width:1.8]',
+                          row.choice.all ? 'rounded-full' : 'rounded-[3px]',
+                          on() ? 'border-accent bg-accent'
+                            : isActive() ? 'border-white bg-input' : 'border-input-border bg-input group-hover:border-white',
+                        )}>
+                          <Show when={on()}><Icon name="check" /></Show>
+                        </span>
+                        <span class={cx(
+                          'min-w-0 overflow-hidden text-ellipsis font-mono text-[12.5px]',
+                          row.choice.dead && !isActive() && 'text-dim group-hover:text-white',
+                        )}>
+                          {row.choice.label || row.choice.value}
+                        </span>
+                        <Show when={row.choice.hint}><span class={cx(menuHint(isActive()), 'flex-none')}>{row.choice.hint}</span></Show>
                       </div>
                     );
                   }}
@@ -199,21 +215,27 @@ export function ProcessSelector() {
   };
   return (
     <button
-      class="device-btn proc-btn"
-      classList={{ set: state.active.procSel.length > 0 }}
+      id="procBtn"
+      class={cx(pickerButton(state.active.procSel.length > 0), 'w-[290px]')}
       title={title()}
       onClick={ev => {
-        if ((ev.target as Element).closest('.proc-clear')) { closeMenu(); state.active.setProcSel([]); return; }
-        toggleMenuBelow(ev.currentTarget, () => [{ content: () => <ProcMenu /> }], 'proc-menu');
+        if ((ev.target as Element).closest('[data-proc-clear]')) { closeMenu(); state.active.setProcSel([]); return; }
+        toggleMenuBelow(ev.currentTarget, () => [{ content: () => <ProcMenu /> }], 'proc');
       }}
     >
-      <Icon name="app" class="device-icon" />
-      <span class="device-label">{label().main}</span>
-      <span class="device-sub">{label().sub}</span>
+      <Icon name="app" class={state.active.procSel.length ? 'text-accent' : 'text-icon'} />
+      <span class={pickerLabel}>{label().main}</span>
+      <span class={pickerSub}>{label().sub}</span>
       <Show when={state.active.procSel.length}>
-        <span class="proc-clear" title="Show all processes"><Icon name="close" /></span>
+        <span
+          data-proc-clear
+          class="inline-flex size-[18px] flex-none items-center justify-center rounded-[3px] text-icon hover:bg-press hover:text-fg [&_svg]:size-3"
+          title="Show all processes"
+        >
+          <Icon name="close" />
+        </span>
       </Show>
-      <Icon name="chevron" class="chevron" />
+      <Icon name="chevron" class="text-icon" />
     </button>
   );
 }

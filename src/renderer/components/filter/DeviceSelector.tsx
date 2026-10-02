@@ -4,6 +4,7 @@ import { state } from '../../state/app';
 import { deviceOnline, devices, deviceText } from '../../state/devices';
 import { type MenuItem, toggleMenuBelow } from '../../state/menu';
 import { Icon } from '../Icon';
+import { cx, pickerButton, pickerLabel, pickerSub } from '../ui';
 
 function label(): { main: string; sub: string } {
   const t = state.active;
@@ -39,14 +40,15 @@ function items(): MenuItem[] {
 export function DeviceSelector() {
   return (
     <button
-      class="device-btn"
+      id="deviceBtn"
+      class={cx(pickerButton(), 'w-[380px]')}
       title={label().sub ? `${label().main} ${label().sub}` : label().main}
       onClick={ev => toggleMenuBelow(ev.currentTarget, items)}
     >
-      <Icon name={state.active.file ? 'file' : 'phone'} class="device-icon" />
-      <span class="device-label">{label().main}</span>
-      <span class="device-sub">{label().sub}</span>
-      <Icon name="chevron" class="chevron" />
+      <Icon name={state.active.file ? 'file' : 'phone'} class="text-icon" />
+      <span class={pickerLabel}>{label().main}</span>
+      <span class={pickerSub}>{label().sub}</span>
+      <Icon name="chevron" class="text-icon" />
     </button>
   );
 }

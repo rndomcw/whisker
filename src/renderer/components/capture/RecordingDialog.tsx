@@ -7,6 +7,11 @@ import { openDialog } from '../../state/dialog';
 import { toast } from '../../state/toast';
 import { fileTimestamp, formatSize } from '../../util/text';
 import { Dialog, DialogButton } from '../Dialog';
+import { captureDialog, captureStage } from '../ui';
+
+/** A trim handle: an accent bar with a light grip line. */
+const trimHandle = 'absolute -inset-y-1 -ml-1.5 w-3 cursor-ew-resize rounded bg-accent ' +
+  "after:absolute after:inset-y-[30%] after:left-[5px] after:w-0.5 after:bg-white after:opacity-80 after:content-['']";
 
 /** m:ss.t */
 function formatTime(ms: number): string {
@@ -115,37 +120,46 @@ function RecordingDialog(props: { id: number; result: RecordingResult; deviceLab
   return (
     <Dialog
       title={`Screen Recording · ${deviceLabel}`}
-      class="capture-dialog"
+      class={captureDialog}
       onKey={onKey}
       footer={<>
         <DialogButton icon="play" label="Play Selection" title="Play the trimmed part" onClick={playSelection} />
         <DialogButton icon="restart" label="Reset Trim" title="Use the whole recording" disabled={!trimmed()}
           onClick={() => { setStart(0); setEnd(duration); }} />
-        <span class="capture-hint">{props.note || 'Drag the handles to trim; Save and Copy use the selection.'}</span>
-        <span class="spacer" />
+        <span class="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-dim">
+          {props.note || 'Drag the handles to trim; Save and Copy use the selection.'}
+        </span>
+        <span class="flex-1" />
         <DialogButton icon="copy" label="Copy to Clipboard"
           title="Copy the video file, to paste into Explorer, Teams, Slack… (Ctrl+C)" onClick={() => void copyVideo()} />
-        <DialogButton icon="save" label="Save…" title="Save as MP4 (Ctrl+S)" class="primary" onClick={() => void saveVideo()} />
+        <DialogButton icon="save" label="Save…" title="Save as MP4 (Ctrl+S)" primary onClick={() => void saveVideo()} />
       </>}
     >
-      <div class="capture-stage">
-        <video ref={video} src={url} controls preload="auto" />
+      <div class={captureStage}>
+        <video ref={video} src={url} controls preload="auto" class="max-h-full max-w-full rounded-md bg-black outline-none" />
       </div>
-      <div class="trim">
-        <div class="trim-track" ref={track} onPointerDown={ev => { video.currentTime = msAt(ev.clientX) / 1000; }}>
-          <div class="trim-range" style={{ left: pct(start()), width: `calc(${pct(end())} - ${pct(start())})` }} />
-          <div class="trim-head" style={{ left: pct(head()) }} />
-          <div class="trim-handle start" title="Drag to set the start" style={{ left: pct(start()) }} onPointerDown={dragHandle('start')} />
-          <div class="trim-handle end" title="Drag to set the end" style={{ left: pct(end()) }} onPointerDown={dragHandle('end')} />
+      <div class="border-t border-line bg-panel px-6 pt-2.5 pb-3">
+        <div
+          ref={track}
+          class="relative h-7 cursor-pointer rounded-[5px] border border-input-border bg-input"
+          onPointerDown={ev => { video.currentTime = msAt(ev.clientX) / 1000; }}
+        >
+          <div
+            class="absolute inset-y-0 border-y-2 border-accent bg-accent/30"
+            style={{ left: pct(start()), width: `calc(${pct(end())} - ${pct(start())})` }}
+          />
+          <div class="pointer-events-none absolute -inset-y-[3px] -ml-px w-0.5 bg-fg" style={{ left: pct(head()) }} />
+          <div class={trimHandle} data-handle="start" title="Drag to set the start" style={{ left: pct(start()) }} onPointerDown={dragHandle('start')} />
+          <div class={trimHandle} data-handle="end" title="Drag to set the end" style={{ left: pct(end()) }} onPointerDown={dragHandle('end')} />
         </div>
-        <div class="trim-info">
-          <span class="trim-start">Start {formatTime(start())}</span>
-          <span class="trim-len">
+        <div class="mt-1.5 flex justify-between text-[12px] tabular-nums text-dim">
+          <span>Start {formatTime(start())}</span>
+          <span>
             {trimmed()
               ? `Selection ${formatTime(end() - start())} of ${formatTime(duration)}`
               : `${formatTime(duration)} · ${result.width} × ${result.height} · ${formatSize(result.data.byteLength)}`}
           </span>
-          <span class="trim-end">End {formatTime(end())}</span>
+          <span>End {formatTime(end())}</span>
         </div>
       </div>
     </Dialog>

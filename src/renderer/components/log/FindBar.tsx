@@ -7,6 +7,7 @@ import { find, firstIdAtLeast, matchIds, setFind, setFindOpen } from '../../stat
 import type { Tab } from '../../state/Tab';
 import { firstIndexAtLeast } from '../../util/search';
 import { Icon } from '../Icon';
+import { cx, IconButton, queryField, queryInput, TextToggle } from '../ui';
 import { focusLog, reveal, topIndex } from './actions';
 
 let input: HTMLInputElement | undefined;
@@ -94,10 +95,12 @@ export function FindBar() {
 
   return (
     <Show when={find.open}>
-      <div class="find-bar">
-        <div class="query-box find-box" classList={{ none: result().none, invalid: find.invalid }}>
-          <Icon name="search" class="find-icon" />
+      <div class="flex flex-none items-center gap-0.5 border-b border-line bg-panel px-2 py-1">
+        <div class={cx(queryField(find.invalid, true), 'mr-1 w-[min(460px,100%)] flex-none pl-1.5')}>
+          <Icon name="search" class="flex-none text-icon" />
           <input
+            id="findInput"
+            class={queryInput}
             ref={input}
             spellcheck={false}
             autocomplete="off"
@@ -115,13 +118,13 @@ export function FindBar() {
               }
             }}
           />
-          <span class="find-count">{result().text}</span>
-          <button class="text-toggle" classList={{ on: caseSens() }} title="Match case" onClick={() => toggle(setCaseSens)}>Cc</button>
-          <button class="text-toggle" classList={{ on: regex() }} title="Regular expression" onClick={() => toggle(setRegex)}>.*</button>
+          <span class={cx('whitespace-nowrap px-1.5 text-[12px]', result().none ? 'text-error' : 'text-dim')}>{result().text}</span>
+          <TextToggle on={caseSens()} title="Match case" onClick={() => toggle(setCaseSens)}>Cc</TextToggle>
+          <TextToggle on={regex()} title="Regular expression" onClick={() => toggle(setRegex)}>.*</TextToggle>
         </div>
-        <button class="icon-btn small" title="Previous match (Shift+Enter)" onClick={() => findStep(-1)}><Icon name="up" /></button>
-        <button class="icon-btn small" title="Next match (Enter)" onClick={() => findStep(1)}><Icon name="down" /></button>
-        <button class="icon-btn small" title="Close (Esc)" onClick={closeFind}><Icon name="close" /></button>
+        <IconButton small icon="up" title="Previous match (Shift+Enter)" onClick={() => findStep(-1)} />
+        <IconButton small icon="down" title="Next match (Enter)" onClick={() => findStep(1)} />
+        <IconButton small icon="close" title="Close (Esc)" onClick={closeFind} />
       </div>
     </Show>
   );

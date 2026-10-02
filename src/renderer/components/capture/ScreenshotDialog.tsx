@@ -6,7 +6,8 @@ import { deviceName } from '../../state/devices';
 import { openDialog } from '../../state/dialog';
 import { toast } from '../../state/toast';
 import { fileTimestamp } from '../../util/text';
-import { Dialog, DialogButton, Separator } from '../Dialog';
+import { Dialog, DialogButton } from '../Dialog';
+import { captureDialog, captureStage, cx, Separator } from '../ui';
 import { ImageEditor, type Tool } from './ImageEditor';
 
 const COLORS = ['#FF3B30', '#FFCC00', '#34C759', '#0A84FF', '#FFFFFF', '#000000'];
@@ -104,34 +105,44 @@ function ScreenshotDialog(props: { serial: string }) {
   return (
     <Dialog
       title={`Screenshot · ${name}`}
-      class="capture-dialog"
+      class={captureDialog}
       onKey={onKey}
       toolbar={<>
         <DialogButton icon="camera" title="Recapture" disabled={busy()} onClick={() => void load()} />
-        <Separator />
+        <Separator vertical />
         <DialogButton icon="rotate-left" title="Rotate left" onClick={() => editor.rotate(-1)} />
         <DialogButton icon="rotate-right" title="Rotate right" onClick={() => editor.rotate(1)} />
-        <Separator />
+        <Separator vertical />
         <For each={TOOLS}>{t => <DialogButton icon={t.icon} title={t.title} on={tool() === t.tool} onClick={() => selectTool(t.tool)} />}</For>
-        <Separator />
+        <Separator vertical />
         <For each={COLORS}>
-          {c => <button class="swatch" classList={{ on: color() === c }} style={{ background: c }} title={c} onClick={() => pickColor(c)} />}
+          {c => (
+            <button
+              class={cx(
+                'mx-0.5 size-[18px] rounded-full border-2 border-panel',
+                color() === c ? 'shadow-[0_0_0_2px_var(--accent)]' : 'shadow-[0_0_0_1px_var(--input-border)]',
+              )}
+              style={{ background: c }}
+              title={c}
+              onClick={() => pickColor(c)}
+            />
+          )}
         </For>
-        <Separator />
+        <Separator vertical />
         <DialogButton icon="undo" title="Undo (Ctrl+Z)" disabled={!history().canUndo} onClick={() => editor.undo()} />
         <DialogButton icon="redo" title="Redo (Ctrl+Y)" disabled={!history().canRedo} onClick={() => editor.redo()} />
-        <span class="spacer" />
-        <span class="capture-size">{history().size}</span>
+        <span class="flex-1" />
+        <span class="whitespace-nowrap text-[12px] text-dim">{history().size}</span>
       </>}
       footer={<>
-        <span class="spacer" />
+        <span class="flex-1" />
         <DialogButton icon="copy" label="Copy to Clipboard" title="Copy the image (Ctrl+C)" disabled={cannotExport()} onClick={() => void copyImage()} />
-        <DialogButton icon="save" label="Save…" title="Save as PNG (Ctrl+S)" class="primary" disabled={cannotExport()} onClick={() => void saveImage()} />
+        <DialogButton icon="save" label="Save…" title="Save as PNG (Ctrl+S)" primary disabled={cannotExport()} onClick={() => void saveImage()} />
       </>}
     >
-      <div class="capture-stage" ref={stage}>
-        <canvas ref={canvas} hidden={!loaded()} />
-        <Show when={status()}><div class="capture-status">{status()}</div></Show>
+      <div class={captureStage} ref={stage}>
+        <canvas ref={canvas} hidden={!loaded()} class="block touch-none shadow-[0_2px_16px_rgba(0,0,0,.4)]" />
+        <Show when={status()}><div class="text-dim">{status()}</div></Show>
       </div>
     </Dialog>
   );
