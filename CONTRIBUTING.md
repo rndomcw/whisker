@@ -47,7 +47,6 @@ src/
     menu.ts          Application menu (popped up from the Whisker logo) and keyboard accelerators
     ipc/             IPC handlers behind window.whisker, one file per area (adb, mirror, files, capture)
     sessions.ts      Per-window logcat streams, mirror sessions and recordings, cleaned up on reload/close
-    migrate.ts       Copies settings from the old "Logcat Viewer" name
     adb/             Finding/running adb, device queries, logcat streaming and parsing
     mirror/          scrcpy-server session: protocol constants, stream reader
     capture/         Screen recording, MP4 muxer (H.264, edit-list trimming), clipboard helpers

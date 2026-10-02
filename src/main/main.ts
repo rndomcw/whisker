@@ -3,7 +3,6 @@
 import { app, BrowserWindow } from 'electron';
 import { registerIpc } from './ipc';
 import { buildMenu } from './menu';
-import { migrateSettings } from './migrate';
 import { stopAll } from './sessions';
 import { APP_ID, createWindow, followSystemTheme } from './window';
 
@@ -12,7 +11,6 @@ registerIpc();
 followSystemTheme();
 
 void app.whenReady().then(() => {
-  migrateSettings();
   buildMenu();
   createWindow();
   app.on('activate', () => { if (!BrowserWindow.getAllWindows().length) createWindow(); });
