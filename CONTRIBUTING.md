@@ -56,6 +56,7 @@ src/
     main.ts          App lifecycle
     window.ts        Main window and title bar
     menu.ts          Application menu (popped up from the Whisker logo) and keyboard accelerators
+    updater.ts       Updates from GitHub Releases (electron-updater) and the About dialog
     ipc/             IPC handlers behind window.whisker, one file per area (adb, mirror, files, capture)
     sessions.ts      Per-window logcat streams, mirror sessions and recordings, cleaned up on reload/close
     adb/             Finding/running adb, device queries, logcat streaming and parsing
@@ -94,6 +95,25 @@ docs/images/       README screenshots (made from a fictional log, not a real dev
 - **Mirroring and recording:** Whisker pushes the bundled `scrcpy-server` to the device and reads its H.264 stream through an adb forward tunnel.
   - Mirroring decodes the stream in the renderer with WebCodecs and sends input back over scrcpy's control socket.
   - Recording muxes the same stream into MP4 in the main process, so ffmpeg isn't needed.
+
+## Releasing
+
+1. Set the new version in `package.json` (for example `1.0.1`), commit, and push.
+2. Tag the commit and push the tag:
+   ```bash
+   git tag v1.0.1
+   git push origin v1.0.1
+   ```
+3. The **Release** workflow (`.github/workflows/release.yml`) checks that the tag matches `package.json`, builds on Windows, and publishes a GitHub Release with the installer, the portable `.exe` and `latest.yml`.
+
+Installed copies of Whisker read `latest.yml` from the latest release and update themselves (`src/main/updater.ts`).
+
+To test updates locally without publishing:
+1. Build an older and a newer version with a separate app id, so they don't replace your own install:
+   ```bash
+   npx electron-builder --win nsis -c.extraMetadata.version=0.9.1 -c.appId=com.whisker.updatetest -c.productName=WhiskerUpdateTest -c.directories.output=update-test/0.9.1
+   ```
+2. Serve the newer one's folder over HTTP, install the older one, and start it with `WHISKER_UPDATE_FEED` set to that URL.
 
 ## Screenshots in the README
 

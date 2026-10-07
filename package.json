@@ -1,7 +1,7 @@
 {
   "name": "whisker",
   "productName": "Whisker",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Whisker",
   "license": "MIT",
   "author": "Wing Chu",
@@ -14,7 +14,7 @@
     "watch": "node scripts/build.mjs --watch",
     "typecheck": "tsc -p tsconfig.main.json && tsc -p tsconfig.renderer.json",
     "start": "npm run build && electron .",
-    "dist": "npm run typecheck && npm run build && electron-builder --win",
+    "dist": "npm run typecheck && npm run build && electron-builder --win --publish never",
     "pack": "npm run typecheck && npm run build && electron-builder --win --dir",
     "icon": "electron scripts/make-icon.js"
   },
@@ -40,7 +40,19 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "Whisker-Setup-${version}.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "cwchuca-dev",
+        "repo": "whisker",
+        "releaseType": "release"
+      }
+    ],
+    "portable": {
+      "artifactName": "Whisker-${version}-portable.${ext}"
     }
   },
   "devDependencies": {
@@ -48,6 +60,7 @@
     "@types/node": "^26.6.3",
     "electron": "^44.5.1",
     "electron-builder": "^26.15.3",
+    "electron-updater": "^6.8.9",
     "esbuild": "^0.28.2",
     "esbuild-plugin-solid": "^0.6.0",
     "solid-js": "^1.9.15",

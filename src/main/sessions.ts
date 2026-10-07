@@ -75,6 +75,9 @@ function stopAllFor(contentsId: number): void {
   for (const key of [...recordings.keys()]) if (key.startsWith(prefix)) discardRecording(key);
 }
 
+/** A recording is running, or waits in its preview to be saved; restarting would lose it. */
+export const hasRecordings = () => recordings.size > 0;
+
 export function stopAll(): void {
   for (const key of [...streams.keys()]) stopStream(key);
   for (const key of [...mirrors.keys()]) stopMirror(key);
