@@ -1,13 +1,21 @@
 # Builds Whisker and publishes a GitHub Release when a version tag is pushed:
-#   git tag v1.0.0 && git push origin v1.0.0
+#   git tag v1.0.1 && git push origin v1.0.1
 # The tag must match the version in package.json. The release gets the installer, the portable .exe,
-# and latest.yml, which installed copies of Whisker read to update themselves.
+# the installer's blockmap, and latest.yml, which installed copies of Whisker read to update themselves.
+#
+# It can also be run by hand (Actions → Release → Run workflow) for an existing tag, for example to
+# rebuild a release or add missing files; files already on the release are replaced.
 
 name: Release
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to build and publish, such as v1.0.0
+        required: true
 
 permissions:
   contents: write # create the release and upload its files
@@ -15,10 +23,14 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -27,8 +39,8 @@ jobs:
         shell: bash
         run: |
           version=$(node -p "require('./package.json').version")
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME doesn't match package.json version $version" >&2
+          if [ "v$version" != "$TAG" ]; then
+            echo "Tag $TAG doesn't match package.json version $version" >&2
             exit 1
           fi
 
@@ -38,7 +50,20 @@ jobs:
 
       - run: npm run build
 
-      - name: Build and publish
-        run: npx electron-builder --win --publish always
+      # Build only; electron-builder's own publishing uploads the targets in parallel, and each tries
+      # to create the release, so all but one fail.
+      - name: Build the installer and the portable app
+        run: npx electron-builder --win --publish never
+
+      - name: Publish the release
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${TAG#v}"
+          files=(dist/Whisker-Setup-$version.exe dist/Whisker-Setup-$version.exe.blockmap dist/Whisker-$version-portable.exe dist/latest.yml)
+          ls -l "${files[@]}"
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --title "Whisker $version" --generate-notes --verify-tag
+          fi
+          gh release upload "$TAG" "${files[@]}" --clobber
