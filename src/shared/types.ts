@@ -102,7 +102,35 @@ export interface RecordingResult {
 
 export type MenuCommand =
   | 'newTab' | 'import' | 'save' | 'resetSettings'
-  | 'toggleAutoSave' | 'chooseCaptureFolder' | 'openCaptureFolder';
+  | 'toggleAutoSave' | 'chooseCaptureFolder' | 'openCaptureFolder'
+  | 'about' | 'checkForUpdates';
+
+/** Shown in the About dialog. */
+export interface AppInfo {
+  version: string;
+  electron: string;
+  chrome: string;
+  node: string;
+  os: string;
+  /** Running as the portable .exe (no automatic updates). */
+  portable: boolean;
+}
+
+/** Where updates stand (see src/main/updater.ts). */
+export type UpdateStatus =
+  | { state: 'idle' }
+  /** A development build, which doesn't update. */
+  | { state: 'unsupported' }
+  | { state: 'checking' }
+  | { state: 'current'; checkedAt: number }
+  | { state: 'downloading'; version: string; percent: number }
+  | { state: 'ready'; version: string }
+  /** A newer version for the portable app, to download by hand. */
+  | { state: 'available'; version: string }
+  | { state: 'error'; error: string };
+
+/** Links the About dialog opens. */
+export type AppLink = 'repo' | 'issues' | 'releases' | 'license';
 
 /** Renderer settings shown in the application menu. */
 export interface MenuState {
@@ -160,6 +188,13 @@ export interface WhiskerApi {
   showAppMenu(x: number, y: number): void;
   /** Updates the settings shown in the application menu. */
   setMenuState(state: MenuState): void;
+  appInfo(): Promise<AppInfo>;
+  updateStatus(): Promise<UpdateStatus>;
+  onUpdateStatus(cb: (status: UpdateStatus) => void): void;
+  checkForUpdates(): void;
+  /** Restarts into a downloaded update; false while a recording would be lost. */
+  installUpdate(): Promise<boolean>;
+  openLink(link: AppLink): void;
   mirrorStart(id: number, serial: string, opts: MirrorOptions): void;
   mirrorStop(id: number): void;
   mirrorControl(id: number, data: Uint8Array): void;

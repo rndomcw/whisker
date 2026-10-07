@@ -4,7 +4,7 @@
 import { BrowserWindow, ipcMain, Menu, shell, type BaseWindow, type MenuItemConstructorOptions } from 'electron';
 import { IPC, menuChannel } from '../shared/channels';
 import type { MenuCommand, MenuState } from '../shared/types';
-import { check, isAutoCheck, setAutoCheck, showAbout, updateMenuLabel } from './updater';
+import { getUpdateStatus, installNow, isAutoCheck, REPO_URL, setAutoCheck, updateMenuLabel } from './updater';
 
 const isMac = process.platform === 'darwin';
 
@@ -62,16 +62,23 @@ export function buildMenu(): void {
     {
       label: 'Help',
       submenu: [
-        { label: updateMenuLabel(), click: () => void check(true) },
+        {
+          // Shows the result in the About dialog; once an update is ready, installs it.
+          label: updateMenuLabel(),
+          click: (item, win) => {
+            if (getUpdateStatus().state === 'ready' && installNow()) return;
+            toRenderer('checkForUpdates')(item, win); // opens About, which starts the check
+          },
+        },
         {
           label: 'Automatically Check for Updates', type: 'checkbox', checked: isAutoCheck(),
           click: item => { setAutoCheck(item.checked); buildMenu(); },
         },
         { type: 'separator' },
-        { label: 'Whisker on GitHub', click: () => void shell.openExternal('https://github.com/cwchuca-dev/whisker') },
-        { label: 'Report an Issue', click: () => void shell.openExternal('https://github.com/cwchuca-dev/whisker/issues') },
+        { label: 'Whisker on GitHub', click: () => void shell.openExternal(REPO_URL) },
+        { label: 'Report an Issue', click: () => void shell.openExternal(`${REPO_URL}/issues`) },
         { type: 'separator' },
-        { label: 'About Whisker', click: showAbout },
+        { label: 'About Whisker', click: toRenderer('about') },
       ],
     },
   ];

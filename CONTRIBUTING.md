@@ -56,8 +56,8 @@ src/
     main.ts          App lifecycle
     window.ts        Main window and title bar
     menu.ts          Application menu (popped up from the Whisker logo) and keyboard accelerators
-    updater.ts       Updates from GitHub Releases (electron-updater) and the About dialog
-    ipc/             IPC handlers behind window.whisker, one file per area (adb, mirror, files, capture)
+    updater.ts       Updates from GitHub Releases (electron-updater); the About dialog shows their status
+    ipc/             IPC handlers behind window.whisker, one file per area (adb, mirror, files, capture, app)
     sessions.ts      Per-window logcat streams, mirror sessions and recordings, cleaned up on reload/close
     adb/             Finding/running adb, device queries, logcat streaming and parsing
     mirror/          scrcpy-server session: protocol constants, stream reader
@@ -75,6 +75,7 @@ src/
       mirror/          Mirror panel
       capture/         Screenshot editor and dialog, recording preview and trim, REC badge
       Toolbar.tsx      Left toolbar and the commands behind it
+      AboutDialog.tsx  Help → About Whisker: version, update status, versions for bug reports, links
       Menu.tsx, Dialog.tsx, Toast.tsx, Icon.tsx, keyboard.ts
     query/           Filter query tokenizer and compiler (Android Studio syntax)
     log/             Log entry model and package/process selections

@@ -2,7 +2,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 import { IPC, menuChannel } from '../shared/channels';
-import type { LogLine, MirrorEvent, RecordEvent, StreamEnd, WhiskerApi } from '../shared/types';
+import type { LogLine, MirrorEvent, RecordEvent, StreamEnd, UpdateStatus, WhiskerApi } from '../shared/types';
 
 // Strip Electron's error prefix ("Error invoking remote method 'x': Error: ") so the UI shows adb's message.
 function invoke<T>(channel: string, ...args: unknown[]): Promise<T> {
@@ -44,6 +44,12 @@ const api: WhiskerApi = {
   onRecord: cb => { ipcRenderer.on(IPC.recordEvent, (_e, id: number, event: RecordEvent) => cb(id, event)); },
   showAppMenu: (x, y) => ipcRenderer.send(IPC.appMenu, Math.round(x), Math.round(y)),
   setMenuState: state => ipcRenderer.send(IPC.menuState, state),
+  appInfo: () => invoke(IPC.appInfo),
+  updateStatus: () => invoke(IPC.updateGetStatus),
+  onUpdateStatus: cb => { ipcRenderer.on(IPC.updateStatus, (_e, status: UpdateStatus) => cb(status)); },
+  checkForUpdates: () => ipcRenderer.send(IPC.updateCheck),
+  installUpdate: () => invoke(IPC.updateInstall),
+  openLink: link => ipcRenderer.send(IPC.openLink, link),
   onMenu: (cmd, cb) => { ipcRenderer.on(menuChannel(cmd), () => cb()); },
   mirrorStart: (id, serial, opts) => ipcRenderer.send(IPC.mirrorStart, id, serial, opts),
   mirrorStop: id => ipcRenderer.send(IPC.mirrorStop, id),

@@ -38,6 +38,12 @@ export const IPC = {
   openFolder: 'capture:openFolder',
   appMenu: 'app:menu',
   menuState: 'app:menuState',
+  appInfo: 'app:info',
+  updateStatus: 'update:status',
+  updateGetStatus: 'update:getStatus',
+  updateCheck: 'update:check',
+  updateInstall: 'update:install',
+  openLink: 'app:openLink',
 } as const;
 
 export const menuChannel = (cmd: MenuCommand) => `menu:${cmd}`;

@@ -2,6 +2,7 @@
 
 import { render } from 'solid-js/web';
 import { api } from './api';
+import { openAboutDialog } from './components/AboutDialog';
 import { App } from './components/App';
 import { exportLog, importLog, resetSettings } from './components/Toolbar';
 import { state } from './state/app';
@@ -25,6 +26,8 @@ api.onMenu('newTab', newTabForActiveDevice);
 api.onMenu('import', () => void importLog());
 api.onMenu('save', () => void exportLog());
 api.onMenu('resetSettings', () => void resetSettings());
+api.onMenu('about', () => openAboutDialog());
+api.onMenu('checkForUpdates', () => openAboutDialog(true));
 
 state.tabs = settings.tabs.map(o => new Tab(o));
 activateTab(state.tabs[Math.min(settings.active, state.tabs.length - 1)]);
@@ -42,4 +45,4 @@ setInterval(() => { void refreshDevices(); }, DEVICE_POLL_MS);
 setInterval(() => { void refreshProcs(); }, PROCESS_POLL_MS);
 
 // Handle for poking at the app from DevTools (and automated checks).
-Object.assign(window, { __whisker: { state, settings, devices, setQuery, addTab, closeTab } });
+Object.assign(window, { __whisker: { state, settings, devices, setQuery, addTab, closeTab, openAboutDialog } });
