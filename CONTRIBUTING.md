@@ -85,7 +85,9 @@ src/
 scripts/           build.mjs (esbuild) and make-icon.js
 vendor/scrcpy/     Bundled scrcpy-server v4.0 and its Apache-2.0 license
 build/             App icon
-docs/images/       README screenshots (made from a fictional log, not a real device)
+docs/              The website (GitHub Pages, served from main /docs): index.html, logo.svg (a copy of
+                   build/icon.svg), and the screenshots it shares with the README
+docs/images/       Screenshots (made from a fictional log, not a real device)
 ```
 
 ## How it works

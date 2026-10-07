@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://rndomcw.github.io/whisker/">Website</a> ·
   <a href="https://github.com/rndomcw/whisker/releases/latest">Download</a> ·
   <a href="#features">Features</a> ·
   <a href="#getting-started">Getting started</a> ·
