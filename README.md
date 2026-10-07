@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/<owner>/whisker/releases/latest">Download</a> ·
+  <a href="https://github.com/cwchuca-dev/whisker/releases/latest">Download</a> ·
   <a href="#features">Features</a> ·
   <a href="#getting-started">Getting started</a> ·
   <a href="#troubleshooting">Troubleshooting</a>
@@ -103,7 +103,7 @@ Android Studio's Logcat is great, but opening a full IDE just to read logs is sl
 - **An Android device with USB debugging on.** Turn on *Developer options* (tap *Build number* seven times), then *USB debugging*. Mirroring and recording need Android 5.0 or later.
 
 ### Install
-Download the latest version from the [Releases page](https://github.com/<owner>/whisker/releases/latest):
+Download the latest version from the [Releases page](https://github.com/cwchuca-dev/whisker/releases/latest):
 
 | File | Use it if… |
 | --- | --- |

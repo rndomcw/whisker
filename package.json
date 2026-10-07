@@ -5,6 +5,8 @@
   "description": "Whisker",
   "license": "MIT",
   "author": "Wing Chu",
+  "repository": "github:cwchuca-dev/whisker",
+  "homepage": "https://github.com/cwchuca-dev/whisker",
   "private": true,
   "main": "out/main/main.js",
   "scripts": {
