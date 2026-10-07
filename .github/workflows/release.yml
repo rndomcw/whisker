@@ -7,6 +7,8 @@
 # rebuild a release or add missing files; files already on the release are replaced.
 
 name: Release
+# The run's title in the Actions list (otherwise the commit message), such as "Release v1.0.1".
+run-name: Release ${{ inputs.tag || github.ref_name }}
 
 on:
   push:
