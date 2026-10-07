@@ -1,12 +1,12 @@
 {
   "name": "whisker",
   "productName": "Whisker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Whisker",
   "license": "MIT",
   "author": "Wing Chu",
-  "repository": "github:cwchuca-dev/whisker",
-  "homepage": "https://github.com/cwchuca-dev/whisker",
+  "repository": "github:rndomcw/whisker",
+  "homepage": "https://github.com/rndomcw/whisker",
   "private": true,
   "main": "out/main/main.js",
   "scripts": {
@@ -46,7 +46,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "cwchuca-dev",
+        "owner": "rndomcw",
         "repo": "whisker",
         "releaseType": "release"
       }

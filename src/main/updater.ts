@@ -15,9 +15,9 @@ import { IPC } from '../shared/channels';
 import type { UpdateStatus } from '../shared/types';
 import { hasRecordings } from './sessions';
 
-export const REPO_URL = 'https://github.com/cwchuca-dev/whisker';
+export const REPO_URL = 'https://github.com/rndomcw/whisker';
 const RELEASES_URL = `${REPO_URL}/releases/latest`;
-const LATEST_API = 'https://api.github.com/repos/cwchuca-dev/whisker/releases/latest';
+const LATEST_API = 'https://api.github.com/repos/rndomcw/whisker/releases/latest';
 const FIRST_CHECK_MS = 10_000;
 const CHECK_EVERY_MS = 4 * 60 * 60_000;
 /** Restart is held back while a recording runs; ask again after this long. */
