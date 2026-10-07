@@ -80,7 +80,7 @@ Android Studio's Logcat is great, but opening a full IDE just to read logs is sl
 - **Auto-save:** turn it on in **Whisker menu → Capture**, and captures skip the preview and go straight to a folder (default `Pictures\Whisker`). This is handy for taking screenshots back to back.
 
 ### Everything else
-- **Menu:** click the Whisker name or logo at the top left (or press `Alt`) for the File, Capture and View menus.
+- **Menu:** click the Whisker name or logo at the top left (or press `Alt`) for the File, Capture, View and Help menus.
 - **Import and export:** open a saved log file in a new tab (`Ctrl+O`), or export the filtered lines (`Ctrl+S`).
 - **Selecting lines:** click, Shift-click and Ctrl-click to select lines, then `Ctrl+C` to copy.
 - **Display:** soft-wrap, a compact view, and column toggles.
@@ -107,8 +107,13 @@ Download the latest version from the [Releases page](https://github.com/cwchuca-
 
 | File | Use it if… |
 | --- | --- |
-| `Whisker Setup x.y.z.exe` | You want Whisker installed, with a Start menu entry. No admin rights are needed. **Recommended.** |
-| `Whisker x.y.z.exe` | You want a portable app that runs without installing. |
+| `Whisker-Setup-x.y.z.exe` | You want Whisker installed, with a Start menu entry and automatic updates. No admin rights are needed. **Recommended.** |
+| `Whisker-x.y.z-portable.exe` | You want a portable app that runs without installing. It tells you about new versions, but you download them yourself. |
+
+### Updates
+The installed app checks GitHub for a new version at startup and every few hours, downloads it in the background, and asks to restart when it's ready. If you choose **Later**, the update is installed when you quit Whisker. Updates wait while a recording is running or waiting to be saved.
+
+Use **Whisker menu → Help → Check for Updates…** to check now, or turn off **Automatically Check for Updates** in the same menu.
 
 > **"Windows protected your PC"?** Whisker isn't code-signed yet, so SmartScreen may warn you the first time. Click **More info → Run anyway**.
 
@@ -161,7 +166,7 @@ Download the latest version from the [Releases page](https://github.com/cwchuca-
 
 ## Privacy
 
-Whisker runs entirely on your computer. It talks only to adb and your device, and it doesn't collect or send any data. Settings are stored in `%APPDATA%\Whisker`.
+Whisker runs on your computer and talks to adb and your device. The only thing it sends over the internet is the update check: it downloads the latest release information from GitHub (`github.com/cwchuca-dev/whisker`). You can turn this off in **Help → Automatically Check for Updates**. Whisker doesn't collect or send any other data. Settings are stored in `%APPDATA%\Whisker`.
 
 ## Contributing
 

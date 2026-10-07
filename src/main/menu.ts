@@ -1,9 +1,10 @@
 // Application menu. On Windows/Linux the custom title bar hides the menu bar, so the Whisker logo in the
 // header pops it up instead; it also provides the keyboard shortcuts.
 
-import { BrowserWindow, ipcMain, Menu, type BaseWindow, type MenuItemConstructorOptions } from 'electron';
+import { BrowserWindow, ipcMain, Menu, shell, type BaseWindow, type MenuItemConstructorOptions } from 'electron';
 import { IPC, menuChannel } from '../shared/channels';
 import type { MenuCommand, MenuState } from '../shared/types';
+import { check, isAutoCheck, setAutoCheck, showAbout, updateMenuLabel } from './updater';
 
 const isMac = process.platform === 'darwin';
 
@@ -56,6 +57,21 @@ export function buildMenu(): void {
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
+      ],
+    },
+    {
+      label: 'Help',
+      submenu: [
+        { label: updateMenuLabel(), click: () => void check(true) },
+        {
+          label: 'Automatically Check for Updates', type: 'checkbox', checked: isAutoCheck(),
+          click: item => { setAutoCheck(item.checked); buildMenu(); },
+        },
+        { type: 'separator' },
+        { label: 'Whisker on GitHub', click: () => void shell.openExternal('https://github.com/cwchuca-dev/whisker') },
+        { label: 'Report an Issue', click: () => void shell.openExternal('https://github.com/cwchuca-dev/whisker/issues') },
+        { type: 'separator' },
+        { label: 'About Whisker', click: showAbout },
       ],
     },
   ];

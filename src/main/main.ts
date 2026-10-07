@@ -4,6 +4,7 @@ import { app, BrowserWindow } from 'electron';
 import { registerIpc } from './ipc';
 import { buildMenu } from './menu';
 import { stopAll } from './sessions';
+import { initUpdater } from './updater';
 import { APP_ID, createWindow, followSystemTheme } from './window';
 
 // One process per user. A second process would share the settings folder, and Chromium makes it wait
@@ -17,6 +18,7 @@ if (!app.requestSingleInstanceLock()) {
   followSystemTheme();
 
   void app.whenReady().then(() => {
+    initUpdater(buildMenu);
     buildMenu();
     createWindow();
     app.on('activate', () => { if (!BrowserWindow.getAllWindows().length) createWindow(); });
