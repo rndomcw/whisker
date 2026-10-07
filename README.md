@@ -107,11 +107,11 @@ Download the latest version from the [Releases page](https://github.com/cwchuca-
 
 | File | Use it if… |
 | --- | --- |
-| `Whisker-Setup-x.y.z.exe` | You want Whisker installed, with a Start menu entry and automatic updates. No admin rights are needed. **Recommended.** |
+| `Whisker-Setup-x.y.z.exe` | You want Whisker installed, with a Start menu entry and automatic updates. It installs in one click for your user account (in `%LOCALAPPDATA%ProgramsWhisker`); no admin rights are needed. **Recommended.** |
 | `Whisker-x.y.z-portable.exe` | You want a portable app that runs without installing. It tells you about new versions, but you download them yourself. |
 
 ### Updates
-The installed app checks GitHub for a new version at startup and every few hours, downloads it in the background, and asks to restart when it's ready. If you choose **Later**, the update is installed when you quit Whisker. Updates wait while a recording is running or waiting to be saved.
+The installed app checks GitHub for a new version at startup and every few hours, downloads it in the background, and asks to restart when it's ready. **Restart Now** shows a small progress window while it installs, then opens the new version. If you choose **Later**, the update is installed when you quit Whisker. Updates wait while a recording is running or waiting to be saved.
 
 Use **Whisker menu → Help → Check for Updates…** to check now, or turn off **Automatically Check for Updates** in the same menu.
 

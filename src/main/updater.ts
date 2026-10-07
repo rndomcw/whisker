@@ -72,8 +72,8 @@ async function message(options: Electron.MessageBoxOptions): Promise<number> {
 /** Restarts into the downloaded update; false while a recording would be lost. */
 export function installNow(): boolean {
   if (status.state !== 'ready' || hasRecordings()) return false;
-  // Silent, so the installer's wizard doesn't open; then start the new version.
-  autoUpdater.quitAndInstall(true, true);
+  // Not silent: the one-click installer shows only a progress window, then starts the new version.
+  autoUpdater.quitAndInstall(false, true);
   return true;
 }
 

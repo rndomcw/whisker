@@ -39,8 +39,8 @@
       ]
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "perMachine": false,
       "artifactName": "Whisker-Setup-${version}.${ext}"
     },
     "publish": [
